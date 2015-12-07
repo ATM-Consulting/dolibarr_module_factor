@@ -5,3 +5,8 @@ ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.
 
 FactorSetup = Configuration du module Factor
 FactorAbout = A propos du module Factor
+
+LateDepot=Dépôt en retard
+FactorBills=Factures au factor
+DepotOk=Déposé
+setFACTOR_LIMIT_DEPOT=Tolérance en jour pour le dépôt au factor

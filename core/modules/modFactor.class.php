@@ -206,19 +206,32 @@ class modFactor extends DolibarrModules
 		// $r++;
 		//
 		// Example to declare a Left Menu entry into an existing Top menu entry:
-		// $this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=xxx',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-		//							'type'=>'left',			                // This is a Left menu entry
-		//							'titre'=>'Factor left menu',
-		//							'mainmenu'=>'xxx',
-		//							'leftmenu'=>'factor',
-		//							'url'=>'/factor/pagelevel2.php',
-		//							'langs'=>'mylangfile@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-		//							'position'=>100,
-		//							'enabled'=>'$conf->factor->enabled',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-		//							'perms'=>'1',			                // Use 'perms'=>'$user->rights->factor->level1->level2' if you want your menu with a permission rules
-		//							'target'=>'',
-		//							'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
-		// $r++;
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=customers_bills',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+									'type'=>'left',			                // This is a Left menu entry
+									'titre'=>'Au factor à déposer',
+									'mainmenu'=>'customers_bills',
+									'leftmenu'=>'factor',
+									'url'=>'/factor/factor.php?factor_depot=0',
+									'langs'=>'mylangfile@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+									'position'=>100,
+									'enabled'=>'$conf->factor->enabled',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+									'perms'=>'1',			                // Use 'perms'=>'$user->rights->factor->level1->level2' if you want your menu with a permission rules
+									'target'=>'',
+									'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
+		 $r++;
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=customers_bills',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+									'type'=>'left',			                // This is a Left menu entry
+									'titre'=>'déposée(s)',
+									'mainmenu'=>'factor',
+									'leftmenu'=>'factor_depot=1',
+									'url'=>'/factor/factor.php',
+									'langs'=>'mylangfile@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+									'position'=>100,
+									'enabled'=>'$conf->factor->enabled',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+									'perms'=>'1',			                // Use 'perms'=>'$user->rights->factor->level1->level2' if you want your menu with a permission rules
+									'target'=>'',
+									'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
+		 $r++;
 
 
 		// Exports
