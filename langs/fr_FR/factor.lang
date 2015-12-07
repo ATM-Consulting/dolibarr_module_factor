@@ -10,3 +10,4 @@ LateDepot=Dépôt en retard
 FactorBills=Factures au factor
 DepotOk=Déposé
 setFACTOR_LIMIT_DEPOT=Tolérance en jour pour le dépôt au factor
+BillsClassifyDeposed=Facture(s) classée(s) déposée(s)

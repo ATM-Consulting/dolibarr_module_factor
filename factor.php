@@ -38,13 +38,33 @@ $id = (GETPOST('facid','int') ? GETPOST('facid','int') : GETPOST('id','int'));
 $action = GETPOST('action','alpha');
 $option = GETPOST('option');
 $builddoc_generatebutton=GETPOST('builddoc_generatebutton');
-
+$factor_depot_classify = GETPOST('factor_depot_classify');
 // Security check
 if ($user->societe_id) $socid=$user->societe_id;
 $result = restrictedArea($user,'facture',$id,'');
 
 $diroutputpdf=$conf->facture->dir_output . '/unpaid/temp';
 if (! $user->rights->societe->client->voir || $socid) $diroutputpdf.='/private/'.$user->id;	// If user has no permission to see all, output dir is specific to user
+
+
+if(!empty($factor_depot_classify)) {
+	
+	$TFactorDepot = GETPOST('TFactorDepot');
+	
+	if(!empty($TFactorDepot)) {
+		foreach($TFactorDepot as $facid) {
+			$f=new Facture($db);
+			$f->fetch($facid);
+			
+			$f->array_options['options_factor_depot'] = 1;
+			$f->update($user);
+			
+		}	
+	}
+	
+	setEventMessage('BillsClassifyDeposed');
+	
+}
 
 
 /*
