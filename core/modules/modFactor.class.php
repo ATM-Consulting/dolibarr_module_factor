@@ -271,10 +271,10 @@ class modFactor extends DolibarrModules
 
         dol_include_once('/core/class/extrafields.class.php');
         $extrafields=new ExtraFields($this->db);
-        $res = $extrafields->addExtraField('fk_soc_factor', 'Fournisseur du factor', 'sellist', 0, '', 'user',0, 0,'', array("options"=> array('societe:nom:rowid:: WHERE fournisseur=1')));
-
-		$res = $extrafields->addExtraField('factor_suivi', 'Uitliser le factor', 'select', 0, '', 'user',0, 0,'', array("options"=> array(2=>'non',1=>'oui')));
-		$res = $extrafields->addExtraField('factor_depot', 'Déposé au factor', 'select', 0, '', 'user',0, 0,'', array("options"=> array(2=>'A déposer',1=>'oui')));
+        $res = $extrafields->addExtraField('fk_soc_factor', 'Fournisseur du factor', 'sellist', 0, '', 'societe',0, 0,'', array("options"=> array('societe:nom:rowid:: WHERE fournisseur=1')));
+		$res = $extrafields->addExtraField('factor_suivi', 'Utiliser le factor', 'select', 0, '', 'societe',0, 0,'', array("options"=> array(2=>'non',1=>'oui')));
+		
+		$res = $extrafields->addExtraField('factor_depot', 'Déposé au factor', 'select', 0, '', 'facture',0, 0,'', array("options"=> array(2=>'A déposer',1=>'oui')));
 
 		$result=$this->_load_tables('/factor/sql/');
 
