@@ -223,8 +223,8 @@ class modFactor extends DolibarrModules
 									'type'=>'left',			                // This is a Left menu entry
 									'titre'=>'déposée(s)',
 									'mainmenu'=>'factor',
-									'leftmenu'=>'factor_depot=1',
-									'url'=>'/factor/factor.php',
+									'leftmenu'=>'factor_depot',
+									'url'=>'/factor/factor.php?factor_depot=1',
 									'langs'=>'mylangfile@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 									'position'=>100,
 									'enabled'=>'$conf->factor->enabled',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
