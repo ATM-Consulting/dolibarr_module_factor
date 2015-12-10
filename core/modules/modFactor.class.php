@@ -89,7 +89,7 @@ class modFactor extends DolibarrModules
 		//                        );
 		$this->module_parts = array(
 			'triggers' => 1,
-			'hooks'=>array('invoicecard')            
+			'hooks'=>array('invoicecard','formfile')            
 		);
 
 		// Data directories to create when module is enabled.
