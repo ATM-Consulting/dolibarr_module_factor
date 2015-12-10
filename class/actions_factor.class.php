@@ -79,6 +79,7 @@ class ActionsFactor
 				
 				define('INC_FROM_DOLIBARR', true);
 				dol_include_once('/factor/config.php');
+				dol_include_once('/factor/class/factor.class.php');
 				
 				$PDOdb = new TPDOdb;
 				

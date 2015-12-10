@@ -125,7 +125,8 @@ $form=new Form($db);
 
 $TFactor = TFactor::getAll($PDOdb);
 // Setup page goes here
-$formCore = new TFormCore('save','auto','post');
+$formCore = new TFormCore('auto','form1','post');
+echo $formCore->hidden('action', 'save');
 $var=false;
 print '<table class="noborder" width="100%">';
 print '<tr class="liste_titre">';
@@ -134,14 +135,23 @@ print '<td>'.$langs->trans("Mention").'</td>'."\n";
 print '<td>&nbsp;</td>'."\n";
 print '</tr>';
 
-foreach($TFactor as $i=>&$factor) {
+foreach($TFactor as $idFactor) {
+	
+	$factor = new TFactor;
+	$factor->load($PDOdb, $idFactor);
+	
 	// Example with a yes / no select
 	$var=!$var;
 	print '<tr '.$bc[$var].'>';
 	
+	ob_start();
+	$form->select_comptes($factor->fk_bank_account,'TFactor['.$factor->getId().'][fk_bank_account]');
+	$selectBank = ob_get_clean();
+	
+	
 	echo '<td>'.$form->select_thirdparty($factor->fk_soc,'TFactor['.$factor->getId().'][fk_soc]','fournisseur=1')
 	.'<br />'
-	.$form->select_comptes($factor->fk_bank_account,'TFactor['.$factor->getId().'][fk_bank_account]')
+	.$selectBank
 	.'</td>'; // supplier
 	
 	echo '<td>'.$formCore->zonetexte('', 'TFactor['.$factor->getId().'][mention]', $factor->mention, 80,5).'</td>';	
@@ -151,10 +161,12 @@ foreach($TFactor as $i=>&$factor) {
 	print '</tr>';
 
 }
-print '</table>';
+print '</table><div class="tabsAction">';
 
-echo $form->btsubmit($langs->trans('Add'), 'bt_add');
-echo $form->btsubmit($langs->trans('Save'), 'bt_save');
+echo $formCore->btsubmit($langs->trans('Add'), 'bt_add','','butAction');
+echo $formCore->btsubmit($langs->trans('Save'), 'bt_save','','butAction');
+
+echo '</div>';
 
 $formCore->end();
 
@@ -177,7 +189,7 @@ print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
 print '<input type="hidden" name="action" value="set_FACTOR_LIMIT_DEPOT">';
-print $form->selectyesno("FACTOR_LIMIT_DEPOT",$conf->global->FACTOR_LIMIT_DEPOT,1);
+print $formCore->texte('',"FACTOR_LIMIT_DEPOT",$conf->global->FACTOR_LIMIT_DEPOT,3);
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';

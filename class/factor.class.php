@@ -19,7 +19,7 @@ class TFactor extends TObjetStd {
 		$TFactor = array();
 		foreach($Tab as $row) {
 			
-			$TFactor[]  = $row;
+			$TFactor[]  = $row->rowid;
 			
 		}
 		
