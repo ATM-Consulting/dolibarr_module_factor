@@ -50,6 +50,39 @@ class ActionsFactor
 	{
 	}
 
+	function doActions($parameters, &$object, &$action, $hookmanager) {
+		
+		
+		if (in_array('invoicecard', explode(':', $parameters['context'])) && $action == 'builddoc')
+		{
+			$fk_soc = $object->socid;
+			if(!empty($fk_soc)) {
+				global $db,$conf;
+				
+				dol_include_once('/societe/class/societe.class.php');
+				
+				$societe = new Societe($db);
+				$societe->fetch($fk_soc);
+				
+				if(!empty($societe->array_options['options_fk_soc_factor']) && $societe->array_options['options_factor_suivi'] == 1) {
+				
+					define('INC_FROM_DOLIBARR', true);
+					dol_include_once('/factor/config.php');
+					dol_include_once('/factor/class/factor.class.php');
+					
+					$PDOdb = new TPDOdb;
+					
+					$factor = new TFactor;
+					$factor->loadBy($PDOdb, $societe->array_options['options_fk_soc_factor'], 'fk_soc');
+					
+					if(!empty($factor->mention)) $conf->global->FACTURE_FREE_TEXT = $factor->mention."\n\n".$conf->global->FACTURE_FREE_TEXT;
+					
+				
+				}
+			}
+		}
+	}
+
 	/**
 	 * Overloading the doActions function : replacing the parent's function with the one below
 	 *
@@ -75,21 +108,21 @@ class ActionsFactor
 				
 				if(!empty($societe->array_options['options_fk_soc_factor']) && $societe->array_options['options_factor_suivi'] == 1) {
 				
-				define('INC_FROM_DOLIBARR', true);
-				dol_include_once('/factor/config.php');
-				dol_include_once('/factor/class/factor.class.php');
-				
-				$PDOdb = new TPDOdb;
-				
-				$factor = new TFactor;
-				$factor->loadBy($PDOdb, $societe->array_options['options_fk_soc_factor'], 'fk_soc');
-				
-				?><script type="text/javascript">
-					$(document).ready(function() {
-						$('#fk_bank').val('<?php echo $factor->fk_bank_account; ?>');
-					});
+					define('INC_FROM_DOLIBARR', true);
+					dol_include_once('/factor/config.php');
+					dol_include_once('/factor/class/factor.class.php');
 					
-				</script><?php
+					$PDOdb = new TPDOdb;
+					
+					$factor = new TFactor;
+					$factor->loadBy($PDOdb, $societe->array_options['options_fk_soc_factor'], 'fk_soc');
+					
+					?><script type="text/javascript">
+						$(document).ready(function() {
+							$('#fk_bank').val('<?php echo $factor->fk_bank_account; ?>');
+						});
+						
+					</script><?php
 				
 				}
 			}

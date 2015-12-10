@@ -33,6 +33,7 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 
 
 $langs->load("bills");
+$langs->load("factor@factor");
 
 $id = (GETPOST('facid','int') ? GETPOST('facid','int') : GETPOST('id','int'));
 $action = GETPOST('action','alpha');
@@ -50,14 +51,14 @@ if (! $user->rights->societe->client->voir || $socid) $diroutputpdf.='/private/'
 if(!empty($factor_depot_classify)) {
 	
 	$TFactorDepot = GETPOST('TFactorDepot');
-	
+	//var_dump($TFactorDepot);
 	if(!empty($TFactorDepot)) {
 		foreach($TFactorDepot as $facid) {
 			$f=new Facture($db);
 			$f->fetch($facid);
 			
 			$f->array_options['options_factor_depot'] = 1;
-			$f->update($user);
+			$f->insertExtraFields();
 			
 		}	
 	}
@@ -215,19 +216,21 @@ $limit = $conf->liste_limit;
 $factor_depot = (int)GETPOST('factor_depot','int');
 
 $sql = "SELECT s.nom, s.rowid as socid";
-$sql.= ", f.rowid as facid, f.facnumber, f.ref_client,f.datev, f.increment, f.total as total_ht, f.tva as total_tva, f.total_ttc, f.localtax1, f.localtax2, f.revenuestamp";
+$sql.= ", f.rowid as facid, f.facnumber, f.ref_client,f.date_valid as datev, f.increment, f.total as total_ht, f.tva as total_tva, f.total_ttc, f.localtax1, f.localtax2, f.revenuestamp";
 $sql.= ", f.datef as df, f.date_lim_reglement as datelimite";
 $sql.= ", f.paye as paye, f.fk_statut, f.type,fex.factor_depot";
 $sql.= ", sum(pf.amount) as am";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
-$sql.= " FROM ".MAIN_DB_PREFIX."societe as s";
+$sql.= " FROM ".MAIN_DB_PREFIX."societe as s LEFT JOIN ".MAIN_DB_PREFIX."societe_extrafields sex ON (sex.fk_object = s.rowid)";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
-$sql.= ",".MAIN_DB_PREFIX."facture as f LEFT JOIN ".MAIN_DB_PREFIX."facture_extrafield fex ON (fex.fk_object = f.rowid)";
+$sql.= ",".MAIN_DB_PREFIX."facture as f LEFT JOIN ".MAIN_DB_PREFIX."facture_extrafields fex ON (fex.fk_object = f.rowid)";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."paiement_facture as pf ON f.rowid=pf.fk_facture ";
 $sql.= " WHERE f.fk_soc = s.rowid";
 $sql.= " AND f.entity = ".$conf->entity;
 $sql.= " AND f.type IN (0,1,3) AND f.fk_statut = 1";
-$sql.=" AND fex.factor_depot=".$factor_depot;
+
+if(empty($factor_depot)) $sql.=" AND (fex.factor_depot=0 OR fex.factor_depot IS NULL) ";
+else $sql.=" AND fex.factor_depot=1";
 
 if ($option == 'late') $sql.=" AND f.date_lim_reglement < '".$db->idate(dol_now() - $conf->facture->client->warning_delay)."'";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$user->id;
@@ -315,7 +318,7 @@ if ($resql)
 	print '<td class="liste_titre">';
 	print '<input class="flat" size="10" type="text" name="search_ref" value="'.$search_ref.'"></td>';
     print '<td class="liste_titre">';
-    print '<input class="flat" type="button" name="factor_depot_classify" value="'.$langs->trans('ClassifyDepot').'">';
+    print '<input type="submit" name="factor_depot_classify" value="'.$langs->trans('ClassifyDepot').'">';
     print '</td>';
 	
     
@@ -385,14 +388,14 @@ if ($resql)
 
 			print '</tr></table>';
 
-			echo '<td align="center">'.
-				$objp->factor_depot;
+			echo '<td align="center">';
 				
-			if($objp->factor_depot === 0) {
 				
-				echo '<input type="checkbox" value="'.$obj->facid.'" name="TFactorDepot[]" />';
+			if($objp->factor_depot != 1) {
 				
-				if($now - strotime($objp->datev) > $conf->global->FACTOR_LIMIT_DEPOT * 86400) {
+				echo '<input type="checkbox" value="'.$objp->facid.'" name="TFactorDepot[]" />';
+				
+				if($now - strtotime($objp->datev) > $conf->global->FACTOR_LIMIT_DEPOT * 86400) {
 					print img_warning($langs->trans("LateDepot"));	
 				}
 			}
