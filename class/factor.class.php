@@ -26,5 +26,18 @@ class TFactor extends TObjetStd {
 		return $TFactor;
 		
 	}
+	
+	static function getBankFromSoc(&$PDOdb, $fk_soc) {
+		
+		$factor = new TFactor;
+		if($factor->loadBy($PDOdb, $fk_soc, 'fk_soc', false)) {
+			return $factor->fk_bank_account;
+			
+		}
+		else {
+			return 0;
+		}
+		
+	}
 	 
 }
