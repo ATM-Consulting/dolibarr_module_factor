@@ -149,7 +149,7 @@ foreach($TFactor as $idFactor) {
 	$selectBank = ob_get_clean();
 	
 	
-	echo '<td>'.$form->select_thirdparty($factor->fk_soc,'TFactor['.$factor->getId().'][fk_soc]','fournisseur=1')
+	echo '<td>'.$form->select_thirdparty_list($factor->fk_soc,'TFactor['.$factor->getId().'][fk_soc]','fournisseur=1')
 	.'<br />'
 	.$selectBank
 	.'</td>'; // supplier

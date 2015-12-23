@@ -225,7 +225,7 @@ $sql.= " FROM ".MAIN_DB_PREFIX."societe as s LEFT JOIN ".MAIN_DB_PREFIX."societe
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
 $sql.= ",".MAIN_DB_PREFIX."facture as f LEFT JOIN ".MAIN_DB_PREFIX."facture_extrafields fex ON (fex.fk_object = f.rowid)";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."paiement_facture as pf ON f.rowid=pf.fk_facture ";
-$sql.= " WHERE f.fk_soc = s.rowid";
+$sql.= " WHERE f.fk_soc = s.rowid AND sex.factor_suivi=1";
 $sql.= " AND f.entity = ".$conf->entity;
 $sql.= " AND f.type IN (0,1,3) AND f.fk_statut = 1";
 

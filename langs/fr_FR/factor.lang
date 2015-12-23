@@ -12,3 +12,4 @@ DepotOk=Déposé
 ClassifyDepot=Classer déposé
 setFACTOR_LIMIT_DEPOT=Tolérance en jour pour le dépôt au factor
 BillsClassifyDeposed=Facture(s) classée(s) déposée(s)
+Supplier/BankAccount=Fournisseur du factor et compte bancaire à sélectionner
