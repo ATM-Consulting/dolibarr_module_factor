@@ -230,7 +230,7 @@ $sql.= " WHERE sex.factor_suivi=1";
 $sql.= " AND f.entity = ".$conf->entity;
 $sql.= " AND f.type IN (0,1,3) AND f.fk_statut = 1";
 
-if(empty($factor_depot)) $sql.=" AND (fex.factor_depot=0 OR fex.factor_depot IS NULL) ";
+if(empty($factor_depot)) $sql.=" AND (fex.factor_depot!=1 OR fex.factor_depot IS NULL) ";
 else $sql.=" AND fex.factor_depot=1";
 
 if ($option == 'late') $sql.=" AND f.date_lim_reglement < '".$db->idate(dol_now() - $conf->facture->client->warning_delay)."'";
@@ -319,7 +319,7 @@ if ($resql)
 	print '<td class="liste_titre">';
 	print '<input class="flat" size="10" type="text" name="search_ref" value="'.$search_ref.'"></td>';
     print '<td class="liste_titre">';
-    print '<input type="submit" name="factor_depot_classify" value="'.$langs->trans('ClassifyDepot').'">';
+    print '<input type="submit" class="flat" name="factor_depot_classify" value="'.$langs->trans('ClassifyDepot').'" style="background-color:#d8d8d8;">';
     print '</td>';
 	
     
@@ -396,7 +396,7 @@ if ($resql)
 				
 				echo '<input type="checkbox" value="'.$objp->facid.'" name="TFactorDepot[]" />';
 				
-				if($now - strtotime($objp->datev) > $conf->global->FACTOR_LIMIT_DEPOT * 86400) {
+				if($now - strtotime($objp->datelimite) > $conf->global->FACTOR_LIMIT_DEPOT * 86400) {
 					print img_warning($langs->trans("LateDepot"));	
 				}
 			}
@@ -460,7 +460,7 @@ if ($resql)
 		}
 
 		print '<tr class="liste_total">';
-		print '<td colspan="5" align="left">'.$langs->trans("Total").'</td>';
+		print '<td colspan="6" align="left">'.$langs->trans("Total").'</td>';
 		print '<td align="right"><b>'.price($total_ht).'</b></td>';
 		print '<td align="right"><b>'.price($total_tva).'</b></td>';
 		print '<td align="right"><b>'.price($total_ttc).'</b></td>';

@@ -208,7 +208,7 @@ class modFactor extends DolibarrModules
 		// Example to declare a Left Menu entry into an existing Top menu entry:
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=customers_bills',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 									'type'=>'left',			                // This is a Left menu entry
-									'titre'=>'Au factor à déposer',
+									'titre'=>'Factures à déposer',
 									'mainmenu'=>'customers_bills',
 									'leftmenu'=>'factor',
 									'url'=>'/factor/factor.php?factor_depot=0',
@@ -221,8 +221,8 @@ class modFactor extends DolibarrModules
 		 $r++;
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=customers_bills',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 									'type'=>'left',			                // This is a Left menu entry
-									'titre'=>'déposée(s)',
-									'mainmenu'=>'factor',
+									'titre'=>'Factures déjà déposées',
+									'mainmenu'=>'customers_bills',
 									'leftmenu'=>'factor_depot',
 									'url'=>'/factor/factor.php?factor_depot=1',
 									'langs'=>'mylangfile@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.

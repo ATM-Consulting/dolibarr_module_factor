@@ -55,7 +55,7 @@ class ActionsFactor
 		
 		if (in_array('invoicecard', explode(':', $parameters['context'])) && $action == 'builddoc')
 		{
-			$fk_soc = $object->socid;
+			/*$fk_soc = $object->socid;
 			if(!empty($fk_soc)) {
 				global $db,$conf;
 				
@@ -75,11 +75,17 @@ class ActionsFactor
 					$factor = new TFactor;
 					$factor->loadBy($PDOdb, $societe->array_options['options_fk_soc_factor'], 'fk_soc');
 					
-					if(!empty($factor->mention)) $conf->global->FACTURE_FREE_TEXT = $factor->mention."\n\n".$conf->global->FACTURE_FREE_TEXT;
+					if(!empty($factor->mention)) {
+						//$conf->global->FACTURE_FREE_TEXT = $factor->mention."\n\n".$conf->global->FACTURE_FREE_TEXT;
+						
+						$object->note_public = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
+						
+						var_dump($object->note_public);
+					}
 					
 				
 				}
-			}
+			}*/
 		}
 	}
 
