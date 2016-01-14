@@ -271,10 +271,10 @@ class modFactor extends DolibarrModules
 
         dol_include_once('/core/class/extrafields.class.php');
         $extrafields=new ExtraFields($this->db);
-        $res = $extrafields->addExtraField('fk_soc_factor', 'Fournisseur du factor', 'sellist', 0, '', 'societe',0, 0,'',  unserialize('a:1:{s:7:"options";a:1:{s:47:"societe:nom:rowid:: fournisseur=1 ORDER BY nom";N;}}') );
-		$res = $extrafields->addExtraField('factor_suivi', 'Utiliser le factor', 'select', 0, '', 'societe',0, 0,'', array("options"=> array(2=>'non',1=>'oui')));
+        $res = $extrafields->addExtraField('fk_soc_factor', 'Fournisseur du factor', 'sellist', 0, '', 'societe',0, 0,'',  unserialize('a:1:{s:7:"options";a:1:{s:32:"societe:nom:rowid::fournisseur=1";N;}}') ); //Ne peut prendre de order by
+		$res = $extrafields->addExtraField('factor_suivi', 'Utiliser le factor', 'select', 0, '', 'societe',0, 0,'', array("options"=> array(2=>'Non',1=>'Oui')));
 		
-		$res = $extrafields->addExtraField('factor_depot', 'Déposé au factor', 'select', 0, '', 'facture',0, 0,'', array("options"=> array(2=>'A déposer',1=>'oui')));
+		$res = $extrafields->addExtraField('factor_depot', 'Déposé au factor', 'select', 0, '', 'facture',0, 0,'', array("options"=> array(2=>'A déposer',1=>'Oui')));
 
 		$result=$this->_load_tables('/factor/sql/');
 
