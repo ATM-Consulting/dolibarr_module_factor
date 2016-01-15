@@ -24,13 +24,14 @@
  *		\brief      Page to list and build liste of unpaid invoices
  */
 
-require '../../main.inc.php';
+require 'config.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
 require_once DOL_DOCUMENT_ROOT.'/compta/paiement/class/paiement.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 
+dol_include_once('/factor/class/factor.class.php');
 
 $langs->load("bills");
 $langs->load("factor@factor");
@@ -59,6 +60,8 @@ if(!empty($factor_depot_classify)) {
 			
 			$f->array_options['options_factor_depot'] = 1;
 			$f->insertExtraFields();
+			
+			TFactor::addEvent($facid,$f->ref);
 			
 		}	
 	}

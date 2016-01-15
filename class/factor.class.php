@@ -39,5 +39,23 @@ class TFactor extends TObjetStd {
 		}
 		
 	}
+	
+	static function addEvent($fk_facture, $ref='') {
+		global $db,$langs,$user;
+		
+		dol_include_once('/comm/action/class/actioncomm.class.php');
+		
+		$a=new ActionComm($db);
+		$a->type_code = 'AC_OTH_AUTO';
+		$a->label = $langs->trans('BillClassifyDeposed',$ref);
+		$a->fk_element = $fk_facture;
+		$a->elementtype = 'facture';
+		$a->usertodo = $user;
+		$a->userdone = $user;
+		$a->percentage = 100;
+		$a->datep = date('Y-m-d H:i:s');
+		$a->add($user);
+		
+	}
 	 
 }
