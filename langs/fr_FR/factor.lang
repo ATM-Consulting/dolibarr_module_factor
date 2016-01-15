@@ -8,7 +8,7 @@ FactorAbout = A propos du module Factor
 
 LateDepot=Dépôt en retard
 FactorBills=Factures au factor
-DepotOk=Déposé
+DepotOk=Déposée
 ClassifyDepot=Classer en statut déposée(s)
 setFACTOR_LIMIT_DEPOT=Tolérance en jour pour le dépôt au factor
 BillsClassifyDeposed=Facture(s) classée(s) déposée(s)
