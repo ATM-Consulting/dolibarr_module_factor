@@ -32,12 +32,16 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 
 dol_include_once('/factor/class/factor.class.php');
+dol_include_once('/factor/lib/factor.lib.php');
 
 $langs->load("bills");
 $langs->load("factor@factor");
 
 $id = (GETPOST('facid','int') ? GETPOST('facid','int') : GETPOST('id','int'));
 $action = GETPOST('action','alpha');
+$export_txt = GETPOST('export_txt', 'alpha');
+if (!empty($export_txt)) $action = 'export';
+
 $option = GETPOST('option');
 $builddoc_generatebutton=GETPOST('builddoc_generatebutton');
 $factor_depot_classify = GETPOST('factor_depot_classify');
@@ -169,7 +173,13 @@ if ($action == 'remove_file')
 	$action='';
 }
 
-
+if ($action == 'export')
+{
+	$format = GETPOST('format', 'alpha');
+	$TRefFacture = GETPOST('toGenerate', 'array');
+	
+	_export_factures($db, $format, $TRefFacture);
+}
 
 /*
  * View
@@ -181,6 +191,31 @@ $formfile = new FormFile($db);
 $title=$langs->trans("FactorBills");
 
 llxHeader('',$title);
+
+$TErrorCodeCompta = $_SESSION['TErrorCodeCompta'];
+$TErrorModeReglt = $_SESSION['TErrorModeReglt'];
+unset($_SESSION['TErrorCodeCompta']);
+unset($_SESSION['TErrorModeReglt']);
+
+if ($TErrorCodeCompta)
+{
+	print '<div class="warning">';
+	foreach ($TErrorCodeCompta as $error)
+	{
+		print '<p>'.$error.'</p>';
+	}
+	print '</div>';
+}
+
+if ($TErrorModeReglt)
+{
+	print '<div class="warning">';
+	foreach ($TErrorModeReglt as $error)
+	{
+		print '<p>'.$error.'</p>';
+	}
+	print '</div>';
+}
 
 ?>
 <script type="text/javascript">
@@ -475,6 +510,11 @@ if ($resql)
 	}
 
 	print "</table>";
+	
+	print "<div class='tabsAction'>";
+	print "<select name='format'><option value='natixis'>Natixis</option></select>&nbsp;";
+	print "<input class='button' type='submit' name='export_txt' value='".$langs->transnoentitiesnoconv('export')."' />";
+	print "</div>";
 
 	/*
 	 * Show list of available documents
@@ -496,4 +536,5 @@ else dol_print_error($db,'');
 
 llxFooter();
 $db->close();
+
 ?>

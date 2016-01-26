@@ -15,3 +15,7 @@ BillsClassifyDeposed=Facture(s) classée(s) déposée(s)
 BillClassifyDeposed=Facture %s déposée au factor
 Supplier/BankAccount=Fournisseur du factor et compte bancaire à sélectionner
 DepotFactor=Dépôt au factor ?
+
+ErrorFactorEmptyCodeCompta=Erreur sur la facture %s, le code comptable n'est pas renseigné pour le client : %s
+ErrorFactorEmptyModeReglt=Erreur sur la facture %s, le mode de règlement n'est pas renseigné
+ErrorCanNotCreateExportFile=Erreur : impossible de créer le fichier d'export
