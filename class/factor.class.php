@@ -7,7 +7,8 @@ class TFactor extends TObjetStd {
                 
                parent::set_table(MAIN_DB_PREFIX.'factor');
                parent::add_champs('fk_soc,fk_bank_account',array('type'=>'int', 'index'=>true));                              //type de valideur
-               parent::_init_vars('mention');
+               parent::add_champs('mention',array('type'=>'text'));
+               parent::_init_vars();
 			   
                parent::start();
 	}
