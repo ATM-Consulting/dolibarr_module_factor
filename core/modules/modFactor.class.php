@@ -210,10 +210,10 @@ class modFactor extends DolibarrModules
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=customers_bills',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 									'type'=>'left',			                // This is a Left menu entry
 									'titre'=>'Factures à déposer',
-									'mainmenu'=>'customers_bills',
+									'mainmenu'=>'factor',
 									'leftmenu'=>'factor',
 									'url'=>'/factor/factor.php?factor_depot=0',
-									'langs'=>'mylangfile@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+									'langs'=>'factor@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 									'position'=>100,
 									'enabled'=>'$conf->factor->enabled',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 									'perms'=>'$user->rights->facture->lire',			                // Use 'perms'=>'$user->rights->factor->level1->level2' if you want your menu with a permission rules
@@ -223,10 +223,10 @@ class modFactor extends DolibarrModules
 		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=customers_bills',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 									'type'=>'left',			                // This is a Left menu entry
 									'titre'=>'Factures déjà déposées',
-									'mainmenu'=>'customers_bills',
-									'leftmenu'=>'factor_depot',
+									'mainmenu'=>'factor',
+									'leftmenu'=>'factor',
 									'url'=>'/factor/factor.php?factor_depot=1',
-									'langs'=>'mylangfile@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+									'langs'=>'factor@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 									'position'=>100,
 									'enabled'=>'$conf->factor->enabled',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 									'perms'=>'$user->rights->facture->lire',			                // Use 'perms'=>'$user->rights->factor->level1->level2' if you want your menu with a permission rules
