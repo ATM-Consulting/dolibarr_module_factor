@@ -111,52 +111,49 @@ class InterfaceFactortrigger
      * 	@param		conf		$conf		Object conf
      * 	@return		int						<0 if KO, 0 if no triggered ran, >0 if OK
      */
-    public function run_trigger($action, $object, $user, $langs, $conf)
+    public function run_trigger($action, &$object, $user, $langs, $conf)
     {
         // Put here code you want to execute when a Dolibarr business events occurs.
         // Data and type of action are stored into $object and $action
         // Users
-        
-        if ($action == 'BEFORE_BILL_BUILDDOC') {
-        	$fk_soc = $object->socid;
-			if(!empty($fk_soc)) {
-				global $db,$conf;
-				
-				dol_include_once('/societe/class/societe.class.php');
-				
-				$societe = new Societe($db);
-				$societe->fetch($fk_soc);
-				
-				if(!empty($societe->array_options['options_fk_soc_factor']) && $societe->array_options['options_factor_suivi'] == 1) {
-				
-					define('INC_FROM_DOLIBARR', true);
-					dol_include_once('/factor/config.php');
-					dol_include_once('/factor/class/factor.class.php');
-					
-					$PDOdb = new TPDOdb;
-					
-					$factor = new TFactor;
-					$factor->loadBy($PDOdb, $societe->array_options['options_fk_soc_factor'], 'fk_soc');
-					
-					if(!empty($factor->mention)) {
-						//$conf->global->FACTURE_FREE_TEXT = $factor->mention."\n\n".$conf->global->FACTURE_FREE_TEXT;
-						
-						if(strpos($object->note_public, $factor->mention) === false) {
-							$object->note_public = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
-							$object->update($user,1);	
-						}
-						
-					}
-					
-				
+       
+	   	if ($action == 'BILL_CREATE')
+	   	{
+	   		$this->setFkAccountIfIsFactor($object);
+	   	}
+	   
+        return 1;
+    }
+	
+	public function setFkAccountIfIsFactor(&$facture)
+	{
+		global $db;
+		
+		if (!isset($facture->thirdparty)) $facture->fetch_thirdparty();
+		
+		if (empty($facture->thirdparty->id)) return false;
+		
+		if(!empty($facture->thirdparty->array_options['options_fk_soc_factor']) && $facture->thirdparty->array_options['options_factor_suivi'] == 1) 
+		{
+			if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
+			dol_include_once('/factor/config.php');
+			dol_include_once('/factor/class/factor.class.php');
+			
+			$PDOdb = new TPDOdb;
+			
+			$factor = new TFactor;
+			$factor->loadBy($PDOdb, $facture->thirdparty->array_options['options_fk_soc_factor'], 'fk_soc');
+			
+			if(!empty($factor->mention) && !empty($factor->fk_bank_account)) 
+			{
+				if(strpos($facture->note_public, $factor->mention) === false) 
+				{
+					$note = $factor->mention.(!empty($facture->note_public) ? "\n\n".$facture->note_public : ''); 
+					$facture->update_note($note, '_public');
+					$facture->setBankAccount($factor->fk_bank_account);
 				}
 			}
-		
-		    dol_syslog(
-                "Trigger '" . $this->name . "' for action '$action' launched by " . __FILE__ . ". id=" . $object->id
-            );
-        }
-
-        return 0;
-    }
+			
+		}
+	}
 }

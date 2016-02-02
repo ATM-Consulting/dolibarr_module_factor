@@ -66,7 +66,7 @@ class ActionsFactor
 				$societe->fetch($object->socid);
 			}
 			
-			if(!empty($socete->id)) 
+			if(!empty($societe->id)) 
 			{
 				global $db,$conf;
 				
@@ -86,7 +86,7 @@ class ActionsFactor
 						if(strpos($object->note_public, $factor->mention) === false) 
 						{
 							$object->note_public = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
-							$object->update($user,1);
+							$r=$object->update_note($object->note_public, '_public');
 						}
 					}
 					
@@ -94,6 +94,6 @@ class ActionsFactor
 			}
 			
 		}
-
+		
 	}
 }
