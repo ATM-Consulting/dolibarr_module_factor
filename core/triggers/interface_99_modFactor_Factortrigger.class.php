@@ -116,6 +116,7 @@ class InterfaceFactortrigger
         // Put here code you want to execute when a Dolibarr business events occurs.
         // Data and type of action are stored into $object and $action
         // Users
+        
         if ($action == 'BEFORE_BILL_BUILDDOC') {
         	$fk_soc = $object->socid;
 			if(!empty($fk_soc)) {

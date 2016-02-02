@@ -89,7 +89,7 @@ class modFactor extends DolibarrModules
 		//                        );
 		$this->module_parts = array(
 			'triggers' => 1
-			,'hooks'=>array('invoicecard','formfile')
+			,'hooks'=>array('invoicecard','formfile','pdfgeneration')
 			,'dir'=>array('output'=>'factor')            
 		);
 
