@@ -56,7 +56,7 @@ $head = factorAdminPrepareHead();
 dol_fiche_head(
     $head,
     'about',
-    $langs->trans("Module104900Name"),
+    $langs->trans("Module104905Name"),
     0,
     'factor@factor'
 );

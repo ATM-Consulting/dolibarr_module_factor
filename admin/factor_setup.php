@@ -26,8 +26,10 @@
 require('../config.php');
 
 dol_include_once('/factor/class/factor.class.php');
+
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
+require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
 require_once '../lib/factor.lib.php';
 
 // Translations
@@ -117,7 +119,7 @@ $head = factorAdminPrepareHead();
 dol_fiche_head(
     $head,
     'settings',
-    $langs->trans("Module104900Name"),
+    $langs->trans("Module104905Name"),
     0,
     "factor@factor"
 );
@@ -154,8 +156,13 @@ foreach($TFactor as $idFactor) {
 	.$selectBank
 	.'</td>'; // supplier
 	
-	echo '<td>'.$formCore->zonetexte('', 'TFactor['.$factor->getId().'][mention]', $factor->mention, 80,5).'</td>';	
-	
+	if(!empty($conf->fckeditor->enabled)) {
+	$editor=new DolEditor('TFactor['.$factor->getId().'][mention]',$factor->mention,'',200);
+    	echo '<td>'.$editor->Create(1).'<td>';
+	} else {
+		echo '<td>'.$formCore->zonetexte('', 'TFactor['.$factor->getId().'][mention]', $factor->mention, 80,5).'</td>';	
+	}
+
 	echo '<td><a href="?action=delete_factor&id='.$factor->getId().'">'.img_delete( $langs->trans('Delete') ).'</a></td>';
 	
 	print '</tr>';
