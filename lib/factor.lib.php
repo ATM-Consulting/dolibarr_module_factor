@@ -93,22 +93,32 @@ function _parseNatixis(&$db, &$TRefFacture)
 		if (empty($facture->thirdparty->code_compta)) $TError['TErrorCodeCompta'][] = $langs->transnoentitiesnoconv('ErrorFactorEmptyCodeCompta', $facture->ref, $facture->thirdparty->name);
 		if (empty($facture->mode_reglement_code)) $TError['TErrorModeReglt'][] = $langs->transnoentitiesnoconv('ErrorFactorEmptyModeReglt', $facture->ref);
 		
-		$TData[] = array(
-			'04'
-			,str_pad($cptLine, 6, 0, STR_PAD_LEFT)
-			,'138'
-			,substr($facnumber, 0, 2)
-			,'053506'
-			,$currency
-			,substr($facnumber, 7) //Num facture
-			,str_pad($facture->thirdparty->code_compta,10)
+		if($facture->type == 2) {
+			$factype = 'AV';
+			$date_ech = '        ';
+			$mod = '   ';
+		} else {
+			$factype = 'FA';
+			$date_ech = date('Ymd', $facture->date_lim_reglement);
+			$mod = $facture->mode_reglement_code;
+		}
+		
+		$TData[] = array( // Voir documentation Natixis dans répertoire Eprolor
+			'04'															// Type de ligne
+			,str_pad($cptLine, 6, 0, STR_PAD_LEFT)							// Compteur
+			,'138'															// Ref Natixis
+			,$factype														// Facture ou avoir
+			,'053506'														// Ref Eprolor chez Natixis
+			,$currency														// Devise
+			,substr($facnumber, -7)				 							// Numéro de facture
+			,str_pad($facture->thirdparty->code_compta,10)					// Code comptable
 			,str_repeat(' ', 5)
-			,date('Ymd', $facture->date)
-			,date('Ymd', $facture->date_lim_reglement)
-			,str_pad($facture->mode_reglement_code, 3)
+			,date('Ymd', $facture->date)									// Date facture
+			,$date_ech														// Date échéance
+			,$mod															// Mode règlement
 			,str_repeat(' ', 66)
 			,str_repeat('0', 15)
-			,str_pad($facture->total_ttc*100, 15, 0, STR_PAD_LEFT)
+			,str_pad($facture->total_ttc*100, 15, 0, STR_PAD_LEFT)			// Montant
 		);
 		
 		$total += $facture->total_ttc*100;
