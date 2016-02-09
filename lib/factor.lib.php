@@ -78,6 +78,9 @@ function _parseNatixis(&$db, &$TRefFacture)
 	$currency = str_pad($conf->currency, 3);
 	$cptLine = 2; //cpt à 2 pcq firstLine contient déjà le cpt à 1
 	$firstLine = array('01000001138FA053506'.$currency.date('Ymd'));
+	$firstLine.= str_repeat(' ', 22).'D';
+	$firstLine.= str_repeat(' ', 77);
+	$firstLine.= str_repeat('0', 30);
 	$total = 0;
 	
 	foreach ($TRefFacture as $ref)
@@ -86,23 +89,26 @@ function _parseNatixis(&$db, &$TRefFacture)
 		$facture->fetch('', $ref);
 		$facture->fetch_thirdparty();
 		
-		$facnumber = '037510';
+		$facnumber = str_replace('-', '', $facture->facnumber);
 		if (empty($facture->thirdparty->code_compta)) $TError['TErrorCodeCompta'][] = $langs->transnoentitiesnoconv('ErrorFactorEmptyCodeCompta', $facture->ref, $facture->thirdparty->name);
 		if (empty($facture->mode_reglement_code)) $TError['TErrorModeReglt'][] = $langs->transnoentitiesnoconv('ErrorFactorEmptyModeReglt', $facture->ref);
 		
 		$TData[] = array(
 			'04'
 			,str_pad($cptLine, 6, 0, STR_PAD_LEFT)
-			,'138FA053506'
+			,'138'
+			,substr($facnumber, 0, 2)
+			,'053506'
 			,$currency
-			,str_pad($facnumber, 8) //Num facture
-			,$facture->thirdparty->code_compta
-			,str_repeat(' ', 6)
-			,date('Ymd',$facture->date)
+			,substr($facnumber, 7) //Num facture
+			,str_pad($facture->thirdparty->code_compta,10)
+			,str_repeat(' ', 5)
+			,date('Ymd', $facture->date)
 			,date('Ymd', $facture->date_lim_reglement)
 			,str_pad($facture->mode_reglement_code, 3)
 			,str_repeat(' ', 66)
-			,str_pad($facture->total_ttc*100, 30, 0, STR_PAD_LEFT)
+			,str_repeat('0', 15)
+			,str_pad($facture->total_ttc*100, 15, 0, STR_PAD_LEFT)
 		);
 		
 		$total += $facture->total_ttc*100;
