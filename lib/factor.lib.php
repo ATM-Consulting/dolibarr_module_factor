@@ -77,10 +77,13 @@ function _parseNatixis(&$db, &$TRefFacture)
 	$TError = $TData = array();
 	$currency = str_pad($conf->currency, 3);
 	$cptLine = 2; //cpt à 2 pcq firstLine contient déjà le cpt à 1
-	$firstLine = array('01000001138FA053506'.$currency.date('Ymd'));
+	
+	// Première ligne du fichier
+	$firstLine = '01000001138FA053506'.$currency.date('Ymd');
 	$firstLine.= str_repeat(' ', 22).'D';
 	$firstLine.= str_repeat(' ', 77);
 	$firstLine.= str_repeat('0', 30);
+	$firstLine = array($firstLine);
 	$total = 0;
 	
 	foreach ($TRefFacture as $ref)
@@ -89,7 +92,7 @@ function _parseNatixis(&$db, &$TRefFacture)
 		$facture->fetch('', $ref);
 		$facture->fetch_thirdparty();
 		
-		$facnumber = str_replace('-', '', $facture->facnumber);
+		$facnumber = str_replace('-', '', $facture->ref);
 		if (empty($facture->thirdparty->code_compta)) $TError['TErrorCodeCompta'][] = $langs->transnoentitiesnoconv('ErrorFactorEmptyCodeCompta', $facture->ref, $facture->thirdparty->name);
 		if (empty($facture->mode_reglement_code)) $TError['TErrorModeReglt'][] = $langs->transnoentitiesnoconv('ErrorFactorEmptyModeReglt', $facture->ref);
 		
@@ -110,6 +113,7 @@ function _parseNatixis(&$db, &$TRefFacture)
 			,$factype														// Facture ou avoir
 			,'053506'														// Ref Eprolor chez Natixis
 			,$currency														// Devise
+			,'0'
 			,substr($facnumber, -7)				 							// Numéro de facture
 			,str_pad($facture->thirdparty->code_compta,10)					// Code comptable
 			,str_repeat(' ', 5)
@@ -129,8 +133,12 @@ function _parseNatixis(&$db, &$TRefFacture)
 	$_SESSION['TErrorModeReglt'] = $TError['TErrorModeReglt'];
 	
 	$cptLine = str_pad($cptLine, 6, 0, STR_PAD_LEFT);
-	$total = str_pad($total, 30, 0, STR_PAD_LEFT);
-	$endLine = array('09'.$cptLine.'138FA053506'.$currency.str_repeat(' ', 108).$total);
+	
+	// Dernière ligne du fichier
+	$endLine = '09'.$cptLine.'138FA053506'.$currency.str_repeat(' ', 108);
+	$endLine.= str_pad(count($TData), 15, 0, STR_PAD_LEFT);
+	$endLine.= str_pad($total, 15, 0, STR_PAD_LEFT);
+	$endLine = array($endLine);
 	
 	// write file
 	$folder = ($conf->entity == 1) ? DOL_DATA_ROOT.'/factor/' : DOL_DATA_ROOT.'/'.$conf->entity.'/factor/';
