@@ -55,12 +55,12 @@ if (! $user->rights->societe->client->voir || $socid) $diroutputpdf.='/private/'
 
 if(!empty($factor_depot_classify)) {
 	
-	$TFactorDepot = GETPOST('TFactorDepot');
+	$TFactorDepot = GETPOST('toGenerate');
 	//var_dump($TFactorDepot);
 	if(!empty($TFactorDepot)) {
-		foreach($TFactorDepot as $facid) {
+		foreach($TFactorDepot as $facref) {
 			$f=new Facture($db);
-			$f->fetch($facid);
+			$f->fetch(0,$facref);
 			
 			$f->array_options['options_factor_depot'] = 1;
 			$f->insertExtraFields();
@@ -337,7 +337,6 @@ if ($resql)
 	print '<table class="liste" width="100%">';
 	print '<tr class="liste_titre">';
 	print_liste_field_titre($langs->trans("Ref"),$_SERVER["PHP_SELF"],"f.facnumber","",$param,"",$sortfield,$sortorder);
-   	print_liste_field_titre($langs->trans('DepotFactor'),$_SERVER["PHP_SELF"],'fex.factor_depot','',$param,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans('RefCustomer'),$_SERVER["PHP_SELF"],'f.ref_client','',$param,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Date"),$_SERVER["PHP_SELF"],"f.datef","",$param,'align="center"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("DateDue"),$_SERVER["PHP_SELF"],"f.date_lim_reglement","",$param,'align="center"',$sortfield,$sortorder);
@@ -348,19 +347,14 @@ if ($resql)
 	print_liste_field_titre($langs->trans("Received"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Rest"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Status"),$_SERVER["PHP_SELF"],"fk_statut,paye,am","",$param,'align="right"',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("Merge"),$_SERVER["PHP_SELF"],"","",$param,'align="center"',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("MergeOrDeposit"),$_SERVER["PHP_SELF"],"","",$param,'align="center"',$sortfield,$sortorder);
 	print "</tr>\n";
 
 	// Lignes des champs de filtre
 	print '<tr class="liste_titre">';
 	// Ref
 	print '<td class="liste_titre">';
-	print '<input class="flat" size="10" type="text" name="search_ref" value="'.$search_ref.'"></td>';
-    print '<td class="liste_titre">';
-    print '<input type="submit" class="flat" name="factor_depot_classify" value="'.$langs->trans('ClassifyDepot').'" style="background-color:#d8d8d8;">';
-    print '</td>';
-	
-    
+	print '<input class="flat" size="10" type="text" name="search_ref" value="'.$search_ref.'"></td>';    
     print '<td class="liste_titre">';
     print '<input class="flat" size="6" type="text" name="search_refcustomer" value="'.$search_refcustomer.'">';
     print '</td>';
@@ -423,34 +417,19 @@ if ($resql)
             $filename=dol_sanitizeFileName($objp->facnumber);
 			$filedir=$conf->facture->dir_output . '/' . dol_sanitizeFileName($objp->facnumber);
 			print $formfile->getDocumentsLink($facturestatic->element, $filename, $filedir);
+			if($now - strtotime($objp->datelimite) > $conf->global->FACTOR_LIMIT_DEPOT * 86400 && $objp->factor_depot != 1) {
+				print img_warning($langs->trans("LateDepot"));	
+			}
             print '</td>';
 
 			print '</tr></table>';
 
-			echo '<td align="center">';
-				
-				
-			if($objp->factor_depot != 1) {
-				
-				echo '<input type="checkbox" value="'.$objp->facid.'" name="TFactorDepot[]" />';
-				
-				if($now - strtotime($objp->datelimite) > $conf->global->FACTOR_LIMIT_DEPOT * 86400) {
-					print img_warning($langs->trans("LateDepot"));	
-				}
-			}
-			else {
-				echo $langs->trans('DepotOk');
-			}
-				
-			echo '</td>';
-
-
 			print "</td>\n";
 
-	                // Customer ref
-	                print '<td class="nowrap">';
-	                print $objp->ref_client;
-	                print '</td>';
+            // Customer ref
+            print '<td class="nowrap">';
+            print $objp->ref_client;
+            print '</td>';
 
 			print '<td class="nowrap" align="center">'.dol_print_date($db->jdate($objp->df),'day').'</td>'."\n";
 			print '<td class="nowrap" align="center">'.dol_print_date($db->jdate($objp->datelimite),'day').'</td>'."\n";
@@ -498,7 +477,7 @@ if ($resql)
 		}
 
 		print '<tr class="liste_total">';
-		print '<td colspan="6" align="left">'.$langs->trans("Total").'</td>';
+		print '<td colspan="5" align="left">'.$langs->trans("Total").'</td>';
 		print '<td align="right"><b>'.price($total_ht).'</b></td>';
 		print '<td align="right"><b>'.price($total_tva).'</b></td>';
 		print '<td align="right"><b>'.price($total_ttc).'</b></td>';
@@ -511,10 +490,14 @@ if ($resql)
 
 	print "</table>";
 	
-	print "<div class='tabsAction'>";
-	print "<select name='format'><option value='natixis'>Natixis</option></select>&nbsp;";
-	print "<input class='button' type='submit' name='export_txt' value='".$langs->transnoentitiesnoconv('export')."' />";
-	print "</div>";
+	if(empty($factor_depot)) {
+		print "<div class='tabsAction'>";
+		print "<select name='format'><option value='natixis'>Natixis</option></select>&nbsp;";
+		print "<input class='button' type='submit' name='export_txt' value='".$langs->transnoentitiesnoconv('FileExport')."' />";
+		print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		print "<input class='button' type='submit' name='factor_depot_classify' value='".$langs->trans('ClassifyDepot')."' />";
+		print "</div>";
+	}
 
 	/*
 	 * Show list of available documents
