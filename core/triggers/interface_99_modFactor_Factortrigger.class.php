@@ -117,23 +117,27 @@ class InterfaceFactortrigger
         // Data and type of action are stored into $object and $action
         // Users
        
-	   	if ($action == 'BILL_CREATE')
+	   	if ($action === 'BILL_CREATE')
 	   	{
 	   		$this->setFkAccountIfIsFactor($object);
 	   	}
+		else if($action==='PROPAL_CREATE' && !empty($conf->global->BANK_ASK_PAYMENT_BANK_DURING_PROPOSAL) ) {
+			$this->setFkAccountIfIsFactor($object);
+		}
+	   
 	   
         return 1;
     }
 	
-	public function setFkAccountIfIsFactor(&$facture)
+	public function setFkAccountIfIsFactor(&$object)
 	{
 		global $db;
 		
-		if (!isset($facture->thirdparty)) $facture->fetch_thirdparty();
+		if (!isset($object->thirdparty)) $object->fetch_thirdparty();
 		
-		if (empty($facture->thirdparty->id)) return false;
+		if (empty($object->thirdparty->id)) return false;
 		
-		if(!empty($facture->thirdparty->array_options['options_fk_soc_factor']) && $facture->thirdparty->array_options['options_factor_suivi'] == 1) 
+		if(!empty($object->thirdparty->array_options['options_fk_soc_factor']) && $object->thirdparty->array_options['options_factor_suivi'] == 1) 
 		{
 			if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
 			dol_include_once('/factor/config.php');
@@ -142,15 +146,15 @@ class InterfaceFactortrigger
 			$PDOdb = new TPDOdb;
 			
 			$factor = new TFactor;
-			$factor->loadBy($PDOdb, $facture->thirdparty->array_options['options_fk_soc_factor'], 'fk_soc');
+			$factor->loadBy($PDOdb, $object->thirdparty->array_options['options_fk_soc_factor'], 'fk_soc');
 			
 			if(!empty($factor->mention) && !empty($factor->fk_bank_account)) 
 			{
-				if(strpos($facture->note_public, $factor->mention) === false) 
+				if(strpos($object->note_public, $factor->mention) === false) 
 				{
 					$note = $factor->mention.(!empty($facture->note_public) ? "\n\n".$facture->note_public : ''); 
-					$facture->update_note($note, '_public');
-					$facture->setBankAccount($factor->fk_bank_account);
+					$object->update_note($note, '_public');
+					$object->setBankAccount($factor->fk_bank_account);
 				}
 			}
 			
