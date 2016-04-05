@@ -122,10 +122,10 @@ function _parseNatixis(&$db, &$TRefFacture)
 			,$mod															// Mode règlement
 			,str_repeat(' ', 66)
 			,str_repeat('0', 15)
-			,str_pad($facture->total_ttc*100, 15, 0, STR_PAD_LEFT)			// Montant
+			,str_pad(round($facture->total_ttc*100), 15, 0, STR_PAD_LEFT)			// Montant
 		);
 		
-		$total += $facture->total_ttc*100;
+		$total += round($facture->total_ttc*100);
 		$cptLine++;
 	}
 	
