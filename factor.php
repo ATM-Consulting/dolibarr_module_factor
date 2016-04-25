@@ -266,7 +266,7 @@ $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as f ON (f.fk_soc = s.rowid)
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."paiement_facture as pf ON (f.rowid=pf.fk_facture) ";
 $sql.= " WHERE sex.factor_suivi=1";
 $sql.= " AND f.entity = ".$conf->entity;
-$sql.= " AND f.type IN (0,1,3) AND f.fk_statut = 1";
+$sql.= " AND f.type IN (0,1,2,3) AND f.fk_statut = 1";
 
 if(empty($factor_depot)) $sql.=" AND (fex.factor_depot!=1 OR fex.factor_depot IS NULL) ";
 else $sql.=" AND fex.factor_depot=1";
