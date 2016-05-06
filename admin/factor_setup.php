@@ -201,6 +201,14 @@ print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">'
 print '</form>';
 print '</td></tr>';
 
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("FACTOR_DO_NOT_UPDATE_NOTE_ON_PROPAL").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="right" width="300">';
+print ajax_constantonoff('FACTOR_DO_NOT_UPDATE_NOTE_ON_PROPAL');
+print '</td></tr>';
+
 print '</table>';
 
 llxFooter();

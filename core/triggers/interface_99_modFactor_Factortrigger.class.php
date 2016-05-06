@@ -153,11 +153,20 @@ class InterfaceFactortrigger
 				if(strpos($object->note_public, $factor->mention) === false) 
 				{
 					$note = $factor->mention.(!empty($facture->note_public) ? "\n\n".$facture->note_public : ''); 
-					$object->update_note($note, '_public');
+					if ($this->checkCanUpdateNote($object)) $object->update_note($note, '_public');
 					$object->setBankAccount($factor->fk_bank_account);
 				}
 			}
 			
 		}
+	}
+	
+	private function checkCanUpdateNote($object)
+	{
+		global $conf;
+		
+		if ($object->element == 'propal' && !empty($conf->global->FACTOR_DO_NOT_UPDATE_NOTE_ON_PROPAL)) return false;
+
+		return true;
 	}
 }
