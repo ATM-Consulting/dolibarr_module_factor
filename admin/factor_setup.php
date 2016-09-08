@@ -147,13 +147,13 @@ foreach($TFactor as $idFactor) {
 	print '<tr '.$bc[$var].'>';
 	
 	ob_start();
-	$form->select_comptes($factor->fk_bank_account,'TFactor['.$factor->getId().'][fk_bank_account]');
+	$form->select_comptes($factor->fk_bank_account,'TFactor['.$factor->getId().'][fk_bank_account]',0,'',1);
 	$selectBank = ob_get_clean();
 	
 	
 	echo '<td>'.$form->select_thirdparty_list($factor->fk_soc,'TFactor['.$factor->getId().'][fk_soc]','fournisseur=1')
 	.'<br />'
-	.$selectBank
+	.$selectBank.img_help(1,$langs->trans('TryRibIfempty'))
 	.'</td>'; // supplier
 	
 	if(!empty($conf->fckeditor->enabled)) {

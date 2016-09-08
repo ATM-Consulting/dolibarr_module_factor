@@ -19,3 +19,5 @@ DepotFactor=Dépôt au factor ?
 ErrorFactorEmptyCodeCompta=Erreur sur la facture %s, le code comptable n'est pas renseigné pour le client : %s
 ErrorFactorEmptyModeReglt=Erreur sur la facture %s, le mode de règlement n'est pas renseigné
 ErrorCanNotCreateExportFile=Erreur : impossible de créer le fichier d'export
+
+TryRibIfempty=Si non sélectionné, essayera de trouver un RIB avec le libellé identique au nom du fournisseur de factor pour ajouter sur la facture
