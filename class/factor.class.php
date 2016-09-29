@@ -41,11 +41,10 @@ class TFactor extends TObjetStd {
 			{
 				$factor = new TFactor;
 				$factor->loadBy($PDOdb, $societe->array_options['options_fk_soc_factor'], 'fk_soc');
-			
 				if($factor->fk_bank_account>0) {
 					
 					$account = new Account($db);
-					$account->fetch($bankid);
+					$account->fetch($factor->fk_bank_account);
 					
 					return $account;
 				}
