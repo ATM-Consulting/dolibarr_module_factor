@@ -6,7 +6,7 @@ class TFactor extends TObjetStd {
                global $conf;
                 
                parent::set_table(MAIN_DB_PREFIX.'factor');
-               parent::add_champs('fk_soc,fk_bank_account',array('type'=>'int', 'index'=>true));                              //type de valideur
+               parent::add_champs('fk_soc,fk_bank_account,allow_to_use_customer_rib',array('type'=>'int', 'index'=>true));                              //type de valideur
                parent::add_champs('mention',array('type'=>'text'));
                parent::_init_vars();
 			   
@@ -41,14 +41,8 @@ class TFactor extends TObjetStd {
 			{
 				$factor = new TFactor;
 				$factor->loadBy($PDOdb, $societe->array_options['options_fk_soc_factor'], 'fk_soc');
-				if($factor->fk_bank_account>0) {
-					
-					$account = new Account($db);
-					$account->fetch($factor->fk_bank_account);
-					
-					return $account;
-				}
-				else{
+				
+				if(!empty($factor->allow_to_use_customer_rib)) {
 					
 					$supplier=new Societe($db);
 					if($supplier->fetch($factor->fk_soc)>0) {
@@ -66,8 +60,18 @@ class TFactor extends TObjetStd {
 						}
 						
 					}
+				
 					
 				}
+				
+				if($factor->fk_bank_account>0) {
+					
+					$account = new Account($db);
+					$account->fetch($factor->fk_bank_account);
+					
+					return $account;
+				}
+				
 				
 			}		
 		}

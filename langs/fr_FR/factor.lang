@@ -21,3 +21,4 @@ ErrorFactorEmptyModeReglt=Erreur sur la facture %s, le mode de règlement n'est 
 ErrorCanNotCreateExportFile=Erreur : impossible de créer le fichier d'export
 
 TryRibIfempty=Si non sélectionné, essayera de trouver un RIB avec le libellé identique au nom du fournisseur de factor pour ajouter sur la facture
+TryRib=Essayera de trouver un RIB à la place de celui-ci avec le libellé identique au nom du fournisseur de factor pour ajouter sur la facture

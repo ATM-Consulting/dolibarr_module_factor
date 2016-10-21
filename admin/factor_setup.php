@@ -91,11 +91,13 @@ else if($action == 'save') {
 	else {
 		$TFactor = GETPOST('TFactor');
 		if(!empty($TFactor)) {
+	//		var_dump($TFactor);
 			foreach($TFactor as $id => &$dataFactor) {
 				
 				$factor =new TFactor;
 				$factor->load($PDOdb, $id);
 				$factor->set_values($dataFactor);
+				$factor->allow_to_use_customer_rib = (empty($dataFactor['allow_to_use_customer_rib']) ? 0 : 1);
 				$factor->save($PDOdb);
 			}	
 		}
@@ -142,6 +144,7 @@ foreach($TFactor as $idFactor) {
 	$factor = new TFactor;
 	$factor->load($PDOdb, $idFactor);
 	
+	
 	// Example with a yes / no select
 	$var=!$var;
 	print '<tr '.$bc[$var].'>';
@@ -153,7 +156,7 @@ foreach($TFactor as $idFactor) {
 	
 	echo '<td>'.$form->select_thirdparty_list($factor->fk_soc,'TFactor['.$factor->getId().'][fk_soc]','fournisseur=1')
 	.'<br />'
-	.$selectBank.img_help(1,$langs->trans('TryRibIfempty'))
+	.$selectBank.$formCore->checkbox1('', 'TFactor['.$factor->getId().'][allow_to_use_customer_rib]', 1, $factor->allow_to_use_customer_rib). img_help(1,$langs->trans('TryRib'))
 	.'</td>'; // supplier
 	
 	if(!empty($conf->fckeditor->enabled)) {
