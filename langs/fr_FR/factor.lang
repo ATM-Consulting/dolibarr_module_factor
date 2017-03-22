@@ -21,3 +21,7 @@ MergeOrDeposit=Fusion/Dépôt
 ErrorFactorEmptyCodeCompta=Erreur sur la facture %s, le code comptable n'est pas renseigné pour le client : %s
 ErrorFactorEmptyModeReglt=Erreur sur la facture %s, le mode de règlement n'est pas renseigné
 ErrorCanNotCreateExportFile=Erreur : impossible de créer le fichier d'export
+
+PDFMentionDisposition=Disposition de la mention dans le PDF
+PublicNote=Note publique
+Footer=Pied de page

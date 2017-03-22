@@ -83,13 +83,18 @@ class ActionsFactor
 					
 					if(!empty($factor->mention)) 
 					{
-						if(strpos($object->note_public, $factor->mention) === false) 
-						{
-							$object->note_public = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
-							$r=$object->update_note($object->note_public, '_public');
+						if($conf->global->FACTOR_PDF_DISPOSITION == 'public_note') {
+							if(strpos($object->note_public, $factor->mention) === false) 
+							{
+								$object->note_public = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
+								$r=$object->update_note($object->note_public, '_public');
+							}
+						}
+						
+						if($conf->global->FACTOR_PDF_DISPOSITION == 'footer') {
+							$conf->global->INVOICE_FREE_TEXT = $factor->mention . $conf->global->INVOICE_FREE_TEXT;
 						}
 					}
-					
 				}
 			}
 			
