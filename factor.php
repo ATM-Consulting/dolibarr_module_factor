@@ -509,7 +509,7 @@ if ($resql)
 	print '<br>';
 	print '<input type="hidden" name="option" value="'.$option.'">';
 	// We disable multilang because we concat already existing pdf.
-	$formfile->show_documents('unpaid','',$filedir,$urlsource,$genallowed,$delallowed,'',1,1,0,48,1,$param,$langs->trans("PDFMerge"),$langs->trans("PDFMerge"));
+	$formfile->show_documents('facture','unpaid/temp',$filedir,$urlsource,$genallowed,$delallowed,'',1,1,0,48,1,$param,$langs->trans("PDFMerge"),$langs->trans("PDFMerge"));
 	print '</form>';
 
 	$db->free($resql);
