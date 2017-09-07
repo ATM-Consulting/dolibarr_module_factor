@@ -56,6 +56,8 @@ class ActionsFactor
 
 	function beforePDFCreation($parameters, &$object, &$action, $hookmanager) 
 	{
+		global $conf;
+		
 		if ($object->element == 'facture')
 		{
 			if (isset($object->thirdparty)) $societe = &$object->thirdparty;
@@ -79,7 +81,9 @@ class ActionsFactor
 					$PDOdb = new TPDOdb;
 					
 					$factor = new TFactor;
-					$factor->loadBy($PDOdb, $societe->array_options['options_fk_soc_factor'], 'fk_soc');
+					$result = $factor->LoadAllBy($PDOdb, array('fk_soc'=>$societe->array_options['options_fk_soc_factor'], 'entity'=>$conf->entity), false);
+
+					$factor = reset($result);	// Take first record found
 					
 					if(!empty($factor->mention)) 
 					{
@@ -91,7 +95,7 @@ class ActionsFactor
 							}
 						}
 						
-						if($conf->global->FACTOR_PDF_DISPOSITION == 'footer') {
+						if($conf->global->FACTOR_PDF_DISPOSITION == 'footer' || empty($conf->global->FACTOR_PDF_DISPOSITION)) {
 							$conf->global->INVOICE_FREE_TEXT = $factor->mention . $conf->global->INVOICE_FREE_TEXT;
 						}
 					}
