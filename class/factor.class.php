@@ -7,6 +7,7 @@ class TFactor extends TObjetStd {
                 
                parent::set_table(MAIN_DB_PREFIX.'factor');
                parent::add_champs('fk_soc,fk_bank_account',array('type'=>'int', 'index'=>true));                              //type de valideur
+               parent::add_champs('entity',array('type'=>'int', 'default'=>1, 'index'=>false));
                parent::add_champs('mention',array('type'=>'text'));
                parent::_init_vars();
 			   
@@ -15,7 +16,9 @@ class TFactor extends TObjetStd {
 
 	static function getAll(&$PDOdb) {
 		
-		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."factor WHERE 1 ORDER BY rowid");
+		global $conf;
+		
+		$Tab = $PDOdb->ExecuteAsArray("SELECT rowid FROM ".MAIN_DB_PREFIX."factor WHERE 1 AND entity = ".$conf->entity." ORDER BY rowid");
 		
 		$TFactor = array();
 		foreach($Tab as $row) {
@@ -30,8 +33,13 @@ class TFactor extends TObjetStd {
 	
 	static function getBankFromSoc(&$PDOdb, $fk_soc) {
 		
+		global $conf;
+
 		$factor = new TFactor;
-		if($factor->loadBy($PDOdb, $fk_soc, 'fk_soc', false)) {
+		if ($result = $factor->LoadAllBy($PDOdb, array('fk_soc'=>$fk_soc, 'entity'=>$conf->entity), false)) {
+
+			$factor = reset($result);	// Take first record found
+
 			return $factor->fk_bank_account;
 			
 		}
