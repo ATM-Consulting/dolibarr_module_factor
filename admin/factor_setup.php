@@ -63,7 +63,7 @@ if (preg_match('/set_(.*)/',$action,$reg))
 if (preg_match('/del_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
-	if (dolibarr_del_const($db, $code, 0) > 0)
+	if (dolibarr_del_const($db, $code, $conf->entity) > 0)
 	{
 		Header("Location: ".$_SERVER["PHP_SELF"]);
 		exit;
@@ -85,6 +85,7 @@ else if($action == 'save') {
 	if(GETPOST('bt_add')!='') {
 		
 		$factor = new TFactor; // nouveau factor
+		$factor->entity = $conf->entity;
 		$factor->save($PDOdb);
 		
 	}
@@ -158,7 +159,7 @@ foreach($TFactor as $idFactor) {
 	
 	if(!empty($conf->fckeditor->enabled)) {
 	$editor=new DolEditor('TFactor['.$factor->getId().'][mention]',$factor->mention,'',200);
-    	echo '<td>'.$editor->Create(1).'<td>';
+    	echo '<td>'.$editor->Create(1).'</td>';
 	} else {
 		echo '<td>'.$formCore->zonetexte('', 'TFactor['.$factor->getId().'][mention]', $factor->mention, 80,5).'</td>';	
 	}
