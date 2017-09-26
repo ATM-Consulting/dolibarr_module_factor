@@ -160,7 +160,7 @@ class InterfaceFactortrigger
 			{
 				if(strpos($object->note_public, $factor->mention) === false)
 				{
-					$note = $factor->mention.(!empty($facture->note_public) ? "\n\n".$facture->note_public : '');
+					$note = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
 					if ($this->checkCanUpdateNote($object)) $object->update_note($note, '_public');
 					$object->setBankAccount($factor->fk_bank_account);
 				}
