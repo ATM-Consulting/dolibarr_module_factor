@@ -116,7 +116,7 @@ class InterfaceFactortrigger
         // Put here code you want to execute when a Dolibarr business events occurs.
         // Data and type of action are stored into $object and $action
         // Users
-       
+
 	   	if ($action === 'BILL_CREATE')
 	   	{
 	   		$this->setFkAccountIfIsFactor($object);
@@ -124,47 +124,55 @@ class InterfaceFactortrigger
 		else if($action==='PROPAL_CREATE' && !empty($conf->global->BANK_ASK_PAYMENT_BANK_DURING_PROPOSAL) ) {
 			$this->setFkAccountIfIsFactor($object);
 		}
-	   
-	   
+
+
         return 1;
     }
-	
+
+    /**
+     * Set the field bank account automatically according to the factor of thirdparty and setup
+     *
+     * @param 	Object		$object		Object edited
+     * @return 	boolean
+     */
 	public function setFkAccountIfIsFactor(&$object)
 	{
-		global $db;
-		
+		global $db, $conf;
+
 		if (!isset($object->thirdparty)) $object->fetch_thirdparty();
-		
+
 		if (empty($object->thirdparty->id)) return false;
-		
-		if(!empty($object->thirdparty->array_options['options_fk_soc_factor']) && $object->thirdparty->array_options['options_factor_suivi'] == 1) 
+
+		if(!empty($object->thirdparty->array_options['options_fk_soc_factor']) && $object->thirdparty->array_options['options_factor_suivi'] == 1)
 		{
 			if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
 			dol_include_once('/factor/config.php');
 			dol_include_once('/factor/class/factor.class.php');
-			
+
 			$PDOdb = new TPDOdb;
-			
+
 			$factor = new TFactor;
-			$factor->loadBy($PDOdb, $object->thirdparty->array_options['options_fk_soc_factor'], 'fk_soc');
-			
-			if(!empty($factor->mention) && !empty($factor->fk_bank_account)) 
+			$result = $factor->LoadAllBy($PDOdb, array('fk_soc'=> $object->thirdparty->array_options['options_fk_soc_factor'], 'entity'=>$conf->entity));
+
+			$factor = reset($result);	// Take first answer found
+
+			if(!empty($factor->mention) && !empty($factor->fk_bank_account))
 			{
-				if(strpos($object->note_public, $factor->mention) === false) 
+				if(strpos($object->note_public, $factor->mention) === false)
 				{
-					$note = $factor->mention.(!empty($facture->note_public) ? "\n\n".$facture->note_public : ''); 
+					$note = $factor->mention.(!empty($facture->note_public) ? "\n\n".$facture->note_public : '');
 					if ($this->checkCanUpdateNote($object)) $object->update_note($note, '_public');
 					$object->setBankAccount($factor->fk_bank_account);
 				}
 			}
-			
+
 		}
 	}
-	
+
 	private function checkCanUpdateNote($object)
 	{
 		global $conf;
-		
+
 		if ($object->element == 'propal' && !empty($conf->global->FACTOR_DO_NOT_UPDATE_NOTE_ON_PROPAL)) return false;
 
 		return true;
