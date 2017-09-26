@@ -158,12 +158,12 @@ class InterfaceFactortrigger
 
 			if(!empty($factor->mention) && !empty($factor->fk_bank_account))
 			{
-				if(strpos($object->note_public, $factor->mention) === false)
+				if(($conf->global->FACTOR_PDF_DISPOSITION == 'public_note') && strpos($object->note_public, $factor->mention) === false)
 				{
 					$note = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
 					if ($this->checkCanUpdateNote($object)) $object->update_note($note, '_public');
-					$object->setBankAccount($factor->fk_bank_account);
 				}
+				$object->setBankAccount($factor->fk_bank_account);
 			}
 
 		}
