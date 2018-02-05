@@ -56,7 +56,7 @@ class ActionsFactor
 
 	function beforePDFCreation($parameters, &$object, &$action, $hookmanager) 
 	{
-		global $conf;
+		global $conf,$db;
 		
 		if ($object->element == 'facture')
 		{
@@ -70,8 +70,6 @@ class ActionsFactor
 			
 			if(!empty($societe->id)) 
 			{
-				global $db,$conf;
-				
 				if(!empty($societe->array_options['options_fk_soc_factor']) && $societe->array_options['options_factor_suivi'] == 1) 
 				{
 					define('INC_FROM_DOLIBARR', true);
