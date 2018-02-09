@@ -252,7 +252,7 @@ if (! $sortorder) $sortorder="ASC";
 $limit = $conf->liste_limit;
 
 $factor_depot = (int)GETPOST('factor_depot','int');
-
+$db->query('SET SESSION sql_mode = \'\';');
 $sql = "SELECT s.nom, s.rowid as socid";
 $sql.= ", f.rowid as facid, f.facnumber, f.ref_client,f.date_valid as datev, f.increment, f.total as total_ht, f.tva as total_tva, f.total_ttc, f.localtax1, f.localtax2, f.revenuestamp";
 $sql.= ", f.datef as df, f.date_lim_reglement as datelimite";
@@ -434,8 +434,11 @@ if ($resql)
 			print '<td class="nowrap" align="center">'.dol_print_date($db->jdate($objp->df),'day').'</td>'."\n";
 			print '<td class="nowrap" align="center">'.dol_print_date($db->jdate($objp->datelimite),'day').'</td>'."\n";
 
-			print '<td><a href="'.DOL_URL_ROOT.'/comm/fiche.php?socid='.$objp->socid.'">'.img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($objp->nom,28).'</a></td>';
-
+			if ((float) DOL_VERSION >= 3.7) $card_url = DOL_URL_ROOT.'/comm/card.php';
+			else $card_url = DOL_URL_ROOT.'/comm/fiche.php';
+			
+			print '<td><a href="'.$card_url.'?socid='.$objp->socid.'">'.img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($objp->nom,28).'</a></td>';
+			
 			print '<td align="right">'.price($objp->total_ht).'</td>';
 			print '<td align="right">'.price($objp->total_tva);
 			$tx1=price2num($objp->localtax1);
