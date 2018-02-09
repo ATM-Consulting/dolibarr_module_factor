@@ -111,7 +111,7 @@ function _parseNatixis(&$db, &$TRefFacture)
 			,str_pad($cptLine, 6, 0, STR_PAD_LEFT)							// Compteur
 			,'138'															// Ref Natixis
 			,$factype														// Facture ou avoir
-			,'053506'														// Ref Eprolor chez Natixis
+			,'053506'														// Ref Eprolor chez Natixis // TODO conf global
 			,$currency														// Devise
 			,'0'
 			,substr($facnumber, -7)				 							// Numéro de facture
@@ -122,7 +122,7 @@ function _parseNatixis(&$db, &$TRefFacture)
 			,$mod															// Mode règlement
 			,str_repeat(' ', 66)
 			,str_repeat('0', 15)
-			,str_pad(round($facture->total_ttc*100), 15, 0, STR_PAD_LEFT)			// Montant
+			,str_pad(round(abs($facture->total_ttc)*100), 15, 0, STR_PAD_LEFT)			// Montant (toujours positif d'après la doc)
 		);
 		
 		$total += round($facture->total_ttc*100);
