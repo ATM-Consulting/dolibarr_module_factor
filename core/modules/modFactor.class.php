@@ -214,11 +214,21 @@ class modFactor extends DolibarrModules
 		// $r++;
 		//
 		// Example to declare a Left Menu entry into an existing Top menu entry:
-		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+
+		if((float)DOL_VERSION >= 7.0){
+			$mainMenu = 'billing';
+			$leftMenu = 'factor_left';
+		}
+		else{
+			$mainMenu = 'accountancy';
+			$leftMenu = 'factor_left';
+		}
+
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu='.$mainMenu,		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 				'type'=>'left',			                // This is a Left menu entry
 				'titre'=>'Factor',
-				'mainmenu'=>'accountancy',
-				'leftmenu'=>'factor_left',
+				'mainmenu'=>$mainMenu,
+				'leftmenu'=>$leftMenu,
 				'url'=>'/factor/factor.php?factor_depot=0',
 				'langs'=>'factor@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 				'position'=>10,
@@ -227,10 +237,10 @@ class modFactor extends DolibarrModules
 				'target'=>'',
 				'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		$r++;
-		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=factor_left',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu='.$mainMenu.',fk_leftmenu='.$leftMenu,		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 				'type'=>'left',			                // This is a Left menu entry
 				'titre'=>'Factures à déposer',
-				'mainmenu'=>'accountancy',
+				'mainmenu'=>$mainMenu,
 				'leftmenu'=>'factor_depot',
 				'url'=>'/factor/factor.php?factor_depot=0',
 				'langs'=>'factor@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
@@ -240,10 +250,10 @@ class modFactor extends DolibarrModules
 				'target'=>'',
 				'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
 		$r++;
-		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu=accountancy,fk_leftmenu=factor_left',		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+		$this->menu[$r]=array(	'fk_menu'=>'fk_mainmenu='.$mainMenu.',fk_leftmenu='.$leftMenu,		    // Use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
 				'type'=>'left',			                // This is a Left menu entry
 				'titre'=>'Factures déjà déposées',
-				'mainmenu'=>'accountancy',
+				'mainmenu'=>$mainMenu,
 				'leftmenu'=>'factor_done',
 				'url'=>'/factor/factor.php?factor_depot=1',
 				'langs'=>'factor@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
