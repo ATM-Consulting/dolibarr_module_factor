@@ -54,24 +54,24 @@ if (! $user->rights->societe->client->voir || $socid) $diroutputpdf.='/private/'
 
 
 if(!empty($factor_depot_classify)) {
-	
+
 	$TFactorDepot = GETPOST('toGenerate');
 	//var_dump($TFactorDepot);
 	if(!empty($TFactorDepot)) {
 		foreach($TFactorDepot as $facref) {
 			$f=new Facture($db);
 			$f->fetch(0,$facref);
-			
+
 			$f->array_options['options_factor_depot'] = 1;
 			$f->insertExtraFields();
-			
+
 			TFactor::addEvent($facid,$f->ref);
-			
-		}	
+
+		}
 	}
-	
+
 	setEventMessage('BillsClassifyDeposed');
-	
+
 }
 
 
@@ -177,7 +177,7 @@ if ($action == 'export')
 {
 	$format = GETPOST('format', 'alpha');
 	$TRefFacture = GETPOST('toGenerate', 'array');
-	
+
 	_export_factures($db, $format, $TRefFacture);
 }
 
@@ -252,9 +252,13 @@ if (! $sortorder) $sortorder="ASC";
 $limit = $conf->liste_limit;
 
 $factor_depot = (int)GETPOST('factor_depot','int');
+
 $db->query('SET SESSION sql_mode = \'\';');
+
+$invoiceRefDBField = floatval(DOL_VERSION) >= 10 ? 'ref' : 'facnumber';
+
 $sql = "SELECT s.nom, s.rowid as socid";
-$sql.= ", f.rowid as facid, f.facnumber, f.ref_client,f.date_valid as datev, f.increment, f.total as total_ht, f.tva as total_tva, f.total_ttc, f.localtax1, f.localtax2, f.revenuestamp";
+$sql.= ", f.rowid as facid, f." . $invoiceRefDBField . " as facnumber, f.ref_client,f.date_valid as datev, f.increment, f.total as total_ht, f.tva as total_tva, f.total_ttc, f.localtax1, f.localtax2, f.revenuestamp";
 $sql.= ", f.datef as df, f.date_lim_reglement as datelimite";
 $sql.= ", f.paye as paye, f.fk_statut, f.type,fex.factor_depot";
 $sql.= ", sum(pf.amount) as am";
@@ -283,18 +287,18 @@ if (GETPOST('filtre'))
 		$sql .= " AND " . $filt[0] . " = " . $filt[1];
 	}
 }
-if ($search_ref)         $sql .= " AND f.facnumber LIKE '%".$db->escape($search_ref)."%'";
+if ($search_ref)         $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape($search_ref)."%'";
 if ($search_refcustomer) $sql .= " AND f.ref_client LIKE '%".$db->escape($search_refcustomer)."%'";
 if ($search_societe)     $sql .= " AND s.nom LIKE '%".$db->escape($search_societe)."%'";
 if ($search_montant_ht)  $sql .= " AND f.total = '".$db->escape($search_montant_ht)."'";
 if ($search_montant_ttc) $sql .= " AND f.total_ttc = '".$db->escape($search_montant_ttc)."'";
-if (GETPOST('sf_ref'))   $sql .= " AND f.facnumber LIKE '%".$db->escape(GETPOST('sf_ref'))."%'";
-$sql.= " GROUP BY s.nom, s.rowid, f.rowid, f.facnumber ";
+if (GETPOST('sf_ref'))   $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape(GETPOST('sf_ref'))."%'";
+$sql.= " GROUP BY s.nom, s.rowid, f.rowid, f." . $invoiceRefDBField . " ";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 $sql.= " ORDER BY ";
 $listfield=explode(',',$sortfield);
 foreach ($listfield as $key => $value) $sql.=$listfield[$key]." ".$sortorder.",";
-$sql.= " f.facnumber DESC";
+$sql.= " f." . $invoiceRefDBField . " DESC";
 
 //$sql .= $db->plimit($limit+1,$offset);
 //print $sql;
@@ -336,7 +340,7 @@ if ($resql)
 	$i = 0;
 	print '<table class="liste" width="100%">';
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Ref"),$_SERVER["PHP_SELF"],"f.facnumber","",$param,"",$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Ref"),$_SERVER["PHP_SELF"],"f." . $invoiceRefDBField,"",$param,"",$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans('RefCustomer'),$_SERVER["PHP_SELF"],'f.ref_client','',$param,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Date"),$_SERVER["PHP_SELF"],"f.datef","",$param,'align="center"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("DateDue"),$_SERVER["PHP_SELF"],"f.date_lim_reglement","",$param,'align="center"',$sortfield,$sortorder);
@@ -354,7 +358,7 @@ if ($resql)
 	print '<tr class="liste_titre">';
 	// Ref
 	print '<td class="liste_titre">';
-	print '<input class="flat" size="10" type="text" name="search_ref" value="'.$search_ref.'"></td>';    
+	print '<input class="flat" size="10" type="text" name="search_ref" value="'.$search_ref.'"></td>';
     print '<td class="liste_titre">';
     print '<input class="flat" size="6" type="text" name="search_refcustomer" value="'.$search_refcustomer.'">';
     print '</td>';
@@ -418,7 +422,7 @@ if ($resql)
 			$filedir=$conf->facture->dir_output . '/' . dol_sanitizeFileName($objp->facnumber);
 			print $formfile->getDocumentsLink($facturestatic->element, $filename, $filedir);
 			if($now - strtotime($objp->datelimite) > $conf->global->FACTOR_LIMIT_DEPOT * 86400 && $objp->factor_depot != 1) {
-				print img_warning($langs->trans("LateDepot"));	
+				print img_warning($langs->trans("LateDepot"));
 			}
             print '</td>';
 
@@ -436,9 +440,9 @@ if ($resql)
 
 			if ((float) DOL_VERSION >= 3.7) $card_url = DOL_URL_ROOT.'/comm/card.php';
 			else $card_url = DOL_URL_ROOT.'/comm/fiche.php';
-			
+
 			print '<td><a href="'.$card_url.'?socid='.$objp->socid.'">'.img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($objp->nom,28).'</a></td>';
-			
+
 			print '<td align="right">'.price($objp->total_ht).'</td>';
 			print '<td align="right">'.price($objp->total_tva);
 			$tx1=price2num($objp->localtax1);
@@ -492,7 +496,7 @@ if ($resql)
 	}
 
 	print "</table>";
-	
+
 	if(empty($factor_depot)) {
 		print "<div class='tabsAction'>";
 		print "<select name='format'><option value='natixis'>Natixis</option></select>&nbsp;";
