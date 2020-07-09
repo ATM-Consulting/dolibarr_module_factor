@@ -58,7 +58,7 @@ class modFactor extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Description of module Factor";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.0.3';
+		$this->version = '1.0.4';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -90,7 +90,7 @@ class modFactor extends DolibarrModules
 		$this->module_parts = array(
 			'triggers' => 1
 			,'hooks'=>array('invoicecard','formfile','pdfgeneration')
-			,'dir'=>array('output'=>'factor')            
+			,'dir'=>array('output'=>'factor')
 		);
 
 		// Data directories to create when module is enabled.
@@ -294,7 +294,7 @@ class modFactor extends DolibarrModules
 	function init($options='')
 	{
 		$sql = array();
-		
+
 		define('INC_FROM_DOLIBARR',true);
 
 		dol_include_once('/factor/config.php');
@@ -304,7 +304,7 @@ class modFactor extends DolibarrModules
         $extrafields=new ExtraFields($this->db);
         $res = $extrafields->addExtraField('fk_soc_factor', 'Fournisseur du factor', 'sellist', 0, '', 'societe',0, 0,'',  unserialize('a:1:{s:7:"options";a:1:{s:32:"societe:nom:rowid::fournisseur=1";N;}}') ); //Ne peut prendre de order by
 		$res = $extrafields->addExtraField('factor_suivi', 'Utiliser le factor', 'select', 0, '', 'societe',0, 0,'', array("options"=> array(2=>'Non',1=>'Oui')));
-		
+
 		$res = $extrafields->addExtraField('factor_depot', 'Déposé au factor', 'select', 0, '', 'facture',0, 0,'', array("options"=> array(2=>'A déposer',1=>'Oui')), 1);
 
 		$result=$this->_load_tables('/factor/sql/');

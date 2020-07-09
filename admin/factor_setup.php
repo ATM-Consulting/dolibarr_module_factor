@@ -51,6 +51,21 @@ if (preg_match('/set_(.*)/',$action,$reg))
 	$code=$reg[1];
 	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
 	{
+		if ($code=='FACTOR_CAN_USE_CUSTOMER') {
+
+			$val=GETPOST($code);
+			if (!$val) {
+				$sql = 'UPDATE '.MAIN_DB_PREFIX .'extrafields SET param=\'a:1:{s:7:"options";a:1:{s:32:"societe:nom:rowid::fournisseur=1";N;}}\' WHERE elementtype=\'societe\' AND name=\'fk_soc_factor\'';
+				$res = $db->query($sql);
+			} else {
+				$sql = 'UPDATE '.MAIN_DB_PREFIX .'extrafields SET param=\'a:1:{s:7:"options";a:1:{s:19:"societe:nom:rowid::";N;}}\' WHERE elementtype=\'societe\' AND name=\'fk_soc_factor\'';
+				$res = $db->query($sql);
+			}
+			if (!$res) {
+				setEventMessage($db->lasterror,'errors');
+			}
+		}
+
 		header("Location: ".$_SERVER["PHP_SELF"]);
 		exit;
 	}
@@ -59,7 +74,7 @@ if (preg_match('/set_(.*)/',$action,$reg))
 		dol_print_error($db);
 	}
 }
-	
+
 if (preg_match('/del_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
@@ -81,24 +96,24 @@ if($action=='delete_factor') {
 	$factor->delete($PDOdb);
 }
 else if($action == 'save') {
-	
+
 	if(GETPOST('bt_add')!='') {
-		
+
 		$factor = new TFactor; // nouveau factor
 		$factor->entity = $conf->entity;
 		$factor->save($PDOdb);
-		
+
 	}
 	else {
 		$TFactor = GETPOST('TFactor');
 		if(!empty($TFactor)) {
 			foreach($TFactor as $id => &$dataFactor) {
-				
+
 				$factor =new TFactor;
 				$factor->load($PDOdb, $id);
 				$factor->set_values($dataFactor);
 				$factor->save($PDOdb);
-			}	
+			}
 		}
 	}
 }
@@ -139,33 +154,33 @@ print '<td>&nbsp;</td>'."\n";
 print '</tr>';
 
 foreach($TFactor as $idFactor) {
-	
+
 	$factor = new TFactor;
 	$factor->load($PDOdb, $idFactor);
-	
+
 	// Example with a yes / no select
 	$var=!$var;
 	print '<tr '.$bc[$var].'>';
-	
+
 	ob_start();
 	$form->select_comptes($factor->fk_bank_account,'TFactor['.$factor->getId().'][fk_bank_account]');
 	$selectBank = ob_get_clean();
-	
-	
-	echo '<td>'.$form->select_thirdparty_list($factor->fk_soc,'TFactor['.$factor->getId().'][fk_soc]','fournisseur=1')
+
+
+	echo '<td>'.$form->select_thirdparty_list($factor->fk_soc,'TFactor['.$factor->getId().'][fk_soc]',(empty($conf->global->FACTOR_CAN_USE_CUSTOMER)?'fournisseur=1':''))
 	.'<br />'
 	.$selectBank
 	.'</td>'; // supplier
-	
+
 	if(!empty($conf->fckeditor->enabled)) {
 	$editor=new DolEditor('TFactor['.$factor->getId().'][mention]',$factor->mention,'',200);
     	echo '<td>'.$editor->Create(1).'</td>';
 	} else {
-		echo '<td>'.$formCore->zonetexte('', 'TFactor['.$factor->getId().'][mention]', $factor->mention, 80,5).'</td>';	
+		echo '<td>'.$formCore->zonetexte('', 'TFactor['.$factor->getId().'][mention]', $factor->mention, 80,5).'</td>';
 	}
 
 	echo '<td><a href="?action=delete_factor&id='.$factor->getId().'">'.img_delete( $langs->trans('Delete') ).'</a></td>';
-	
+
 	print '</tr>';
 
 }
@@ -208,6 +223,19 @@ print '<td>'.$langs->trans("FACTOR_DO_NOT_UPDATE_NOTE_ON_PROPAL").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" width="300">';
 print ajax_constantonoff('FACTOR_DO_NOT_UPDATE_NOTE_ON_PROPAL');
+print '</td></tr>';
+
+$var=!$var;
+print '<tr '.$bc[$var].'>';
+print '<td>'.$langs->trans("FACTOR_CAN_USE_CUSTOMER").'</td>';
+print '<td align="center" width="20">&nbsp;</td>';
+print '<td align="right" width="300">';
+print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
+print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="action" value="set_FACTOR_CAN_USE_CUSTOMER">';
+print $form->selectarray('FACTOR_CAN_USE_CUSTOMER',array('0'=>'Non','1'=>'Oui'),$conf->global->FACTOR_CAN_USE_CUSTOMER);
+print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
+print '</form>';
 print '</td></tr>';
 
 // Note publique ou pied de page
