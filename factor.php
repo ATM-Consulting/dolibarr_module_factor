@@ -165,7 +165,7 @@ if ($action == 'remove_file')
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 
 	$langs->load("other");
-	$upload_dir = $diroutputpdf;
+	$upload_dir = $conf->facture->dir_output;
 	$file = $upload_dir . '/' . GETPOST('file');
 	$ret=dol_delete_file($file,0,0,0,'');
 	if ($ret) setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile')));
@@ -265,7 +265,7 @@ $sql.= ", sum(pf.amount) as am";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 $sql.= " FROM ".MAIN_DB_PREFIX."societe as s LEFT JOIN ".MAIN_DB_PREFIX."societe_extrafields sex ON (sex.fk_object = s.rowid)";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe_commerciaux as sc ON (s.rowid = sc.fk_soc) ";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as f ON (f.fk_soc = s.rowid) 
+$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as f ON (f.fk_soc = s.rowid)
 	 LEFT JOIN ".MAIN_DB_PREFIX."facture_extrafields fex ON (fex.fk_object = f.rowid)";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."paiement_facture as pf ON (f.rowid=pf.fk_facture) ";
 $sql.= " WHERE sex.factor_suivi=1";
@@ -516,7 +516,23 @@ if ($resql)
 	print '<br>';
 	print '<input type="hidden" name="option" value="'.$option.'">';
 	// We disable multilang because we concat already existing pdf.
-	$formfile->show_documents('facture','unpaid/temp',$filedir,$urlsource,$genallowed,$delallowed,'',1,1,0,48,1,$param,$langs->trans("PDFMerge"),$langs->trans("PDFMerge"));
+	print $formfile->showdocuments(
+		'facture',
+		'unpaid/temp',
+		$filedir,
+		$urlsource,
+		$genallowed,
+		$delallowed,
+		'',
+		1,
+		1,
+		0,
+		48,
+		1,
+		$param,
+		$langs->trans('PDFMerge'),
+		$langs->trans('PDFMerge')
+	);
 	print '</form>';
 
 	$db->free($resql);
