@@ -42,9 +42,9 @@ $action = GETPOST('action','alpha');
 $export_txt = GETPOST('export_txt', 'alpha');
 if (!empty($export_txt)) $action = 'export';
 
-$option = GETPOST('option');
-$builddoc_generatebutton=GETPOST('builddoc_generatebutton');
-$factor_depot_classify = GETPOST('factor_depot_classify');
+$option = GETPOST('option', 'none');
+$builddoc_generatebutton=GETPOST('builddoc_generatebutton', 'none');
+$factor_depot_classify = GETPOST('factor_depot_classify', 'none');
 // Security check
 if ($user->societe_id) $socid=$user->societe_id;
 $result = restrictedArea($user,'facture',$id,'');
@@ -55,7 +55,7 @@ if (! $user->rights->societe->client->voir || $socid) $diroutputpdf.='/private/'
 
 if(!empty($factor_depot_classify)) {
 
-	$TFactorDepot = GETPOST('toGenerate');
+	$TFactorDepot = GETPOST('toGenerate', 'none');
 	//var_dump($TFactorDepot);
 	if(!empty($TFactorDepot)) {
 		foreach($TFactorDepot as $facref) {
@@ -79,7 +79,7 @@ if(!empty($factor_depot_classify)) {
  * Action
  */
 
-if ($action == "builddoc" && $user->rights->facture->lire && ! GETPOST('button_search') && !empty($builddoc_generatebutton))
+if ($action == "builddoc" && $user->rights->facture->lire && ! GETPOST('button_search', 'none') && !empty($builddoc_generatebutton))
 {
 	if (is_array($_POST['toGenerate']))
 	{
@@ -101,7 +101,7 @@ if ($action == "builddoc" && $user->rights->facture->lire && ! GETPOST('button_s
         // Define output language (Here it is not used because we do only merging existing PDF)
         $outputlangs = $langs;
         $newlang='';
-        if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id')) $newlang=GETPOST('lang_id');
+        if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id', 'none')) $newlang=GETPOST('lang_id', 'none');
         if ($conf->global->MAIN_MULTILANGS && empty($newlang)) $newlang=$object->client->default_lang;
         if (! empty($newlang))
         {
@@ -166,10 +166,10 @@ if ($action == 'remove_file')
 
 	$langs->load("other");
 	$upload_dir = $diroutputpdf;
-	$file = $upload_dir . '/' . GETPOST('file');
+	$file = $upload_dir . '/' . GETPOST('file', 'none');
 	$ret=dol_delete_file($file,0,0,0,'');
-	if ($ret) setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile')));
-	else setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile')), 'errors');
+	if ($ret) setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile', 'none')));
+	else setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile', 'none')), 'errors');
 	$action='';
 }
 
@@ -232,12 +232,12 @@ $(document).ready(function() {
 
 $now=dol_now();
 
-$search_ref = GETPOST("search_ref");
-$search_refcustomer=GETPOST('search_refcustomer');
-$search_societe = GETPOST("search_societe");
-$search_montant_ht = GETPOST("search_montant_ht");
-$search_montant_ttc = GETPOST("search_montant_ttc");
-$late = GETPOST("late");
+$search_ref = GETPOST("search_ref", 'alpha');
+$search_refcustomer=GETPOST('search_refcustomer', 'alpha');
+$search_societe = GETPOST("search_societe", 'alpha');
+$search_montant_ht = GETPOST("search_montant_ht", 'alpha');
+$search_montant_ttc = GETPOST("search_montant_ttc", 'alpha');
+$late = GETPOST("late", 'none');
 
 $sortfield = GETPOST("sortfield",'alpha');
 $sortorder = GETPOST("sortorder",'alpha');
@@ -251,7 +251,7 @@ if (! $sortorder) $sortorder="ASC";
 
 $limit = $conf->liste_limit;
 
-$factor_depot = (int)GETPOST('factor_depot','int');
+$factor_depot = GETPOST('factor_depot','int');
 
 $db->query('SET SESSION sql_mode = \'\';');
 
@@ -265,7 +265,7 @@ $sql.= ", sum(pf.amount) as am";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 $sql.= " FROM ".MAIN_DB_PREFIX."societe as s LEFT JOIN ".MAIN_DB_PREFIX."societe_extrafields sex ON (sex.fk_object = s.rowid)";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe_commerciaux as sc ON (s.rowid = sc.fk_soc) ";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as f ON (f.fk_soc = s.rowid) 
+$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as f ON (f.fk_soc = s.rowid)
 	 LEFT JOIN ".MAIN_DB_PREFIX."facture_extrafields fex ON (fex.fk_object = f.rowid)";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."paiement_facture as pf ON (f.rowid=pf.fk_facture) ";
 $sql.= " WHERE sex.factor_suivi=1";
@@ -278,21 +278,12 @@ else $sql.=" AND fex.factor_depot=1";
 if ($option == 'late') $sql.=" AND f.date_lim_reglement < '".$db->idate(dol_now() - $conf->facture->client->warning_delay)."'";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= " AND sc.fk_user = " .$user->id;
 if (! empty($socid)) $sql .= " AND s.rowid = ".$socid;
-if (GETPOST('filtre'))
-{
-	$filtrearr = explode(",", GETPOST('filtre'));
-	foreach ($filtrearr as $fil)
-	{
-		$filt = explode(":", $fil);
-		$sql .= " AND " . $filt[0] . " = " . $filt[1];
-	}
-}
 if ($search_ref)         $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape($search_ref)."%'";
 if ($search_refcustomer) $sql .= " AND f.ref_client LIKE '%".$db->escape($search_refcustomer)."%'";
 if ($search_societe)     $sql .= " AND s.nom LIKE '%".$db->escape($search_societe)."%'";
 if ($search_montant_ht)  $sql .= " AND f.total = '".$db->escape($search_montant_ht)."'";
 if ($search_montant_ttc) $sql .= " AND f.total_ttc = '".$db->escape($search_montant_ttc)."'";
-if (GETPOST('sf_ref'))   $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape(GETPOST('sf_ref'))."%'";
+if (GETPOST('sf_ref', 'none'))   $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape(GETPOST('sf_ref', 'no'))."%'";
 $sql.= " GROUP BY s.nom, s.rowid, f.rowid, f." . $invoiceRefDBField . " ";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 $sql.= " ORDER BY ";
