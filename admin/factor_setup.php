@@ -49,11 +49,11 @@ $action = GETPOST('action', 'alpha');
 if (preg_match('/set_(.*)/',$action,$reg))
 {
 	$code=$reg[1];
-	if (dolibarr_set_const($db, $code, GETPOST($code), 'chaine', 0, '', $conf->entity) > 0)
+	if (dolibarr_set_const($db, $code, GETPOST($code, 'none'), 'chaine', 0, '', $conf->entity) > 0)
 	{
 		if ($code=='FACTOR_CAN_USE_CUSTOMER') {
 
-			$val=GETPOST($code);
+			$val=GETPOST($code, 'none');
 			if (!$val) {
 				$sql = 'UPDATE '.MAIN_DB_PREFIX .'extrafields SET param=\'a:1:{s:7:"options";a:1:{s:32:"societe:nom:rowid::fournisseur=1";N;}}\' WHERE elementtype=\'societe\' AND name=\'fk_soc_factor\'';
 				$res = $db->query($sql);
@@ -92,12 +92,12 @@ if (preg_match('/del_(.*)/',$action,$reg))
 $PDOdb=new TPDOdb;
 if($action=='delete_factor') {
 	$factor = new TFactor; // nouveau factor
-	$factor->load($PDOdb, GETPOST('id'));
+	$factor->load($PDOdb, GETPOST('id', 'int'));
 	$factor->delete($PDOdb);
 }
 else if($action == 'save') {
 
-	if(GETPOST('bt_add')!='') {
+	if(GETPOST('bt_add', 'none')!='') {
 
 		$factor = new TFactor; // nouveau factor
 		$factor->entity = $conf->entity;
@@ -105,7 +105,7 @@ else if($action == 'save') {
 
 	}
 	else {
-		$TFactor = GETPOST('TFactor');
+		$TFactor = GETPOST('TFactor', 'array');
 		if(!empty($TFactor)) {
 			foreach($TFactor as $id => &$dataFactor) {
 
