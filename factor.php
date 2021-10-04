@@ -307,7 +307,8 @@ if ($resql)
 	$param="";
 	$param.=(! empty($socid)?"&amp;socid=".$socid:"");
 	$param.=(! empty($option)?"&amp;option=".$option:"");
-	if ($search_ref)         $param.='&amp;search_ref='.urlencode($search_ref);
+    if ($factor_depot >= 0)  $param.='&amp;factor_depot='.urlencode($factor_depot);
+    if ($search_ref)         $param.='&amp;search_ref='.urlencode($search_ref);
     	if ($search_refcustomer) $param.='&amp;search_ref='.urlencode($search_refcustomer);
 	if ($search_societe)     $param.='&amp;search_societe='.urlencode($search_societe);
 	if ($search_montant_ht)  $param.='&amp;search_montant_ht='.urlencode($search_montant_ht);
@@ -326,6 +327,7 @@ if ($resql)
 
 	print '<form id="form_generate_pdf" method="POST" action="'.$_SERVER["PHP_SELF"].'?sortfield='. $sortfield .'&sortorder='. $sortorder .'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="factor_depot" value="'.dol_escape_htmltag($factor_depot).'">';
 	if ($late) print '<input type="hidden" name="late" value="'.dol_escape_htmltag($late).'">';
 
 	$i = 0;
@@ -341,7 +343,7 @@ if ($resql)
 	print_liste_field_titre($langs->trans("AmountTTC"),$_SERVER["PHP_SELF"],"f.total_ttc","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Received"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Rest"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("Status"),$_SERVER["PHP_SELF"],"fk_statut,paye,am","",$param,'align="right"',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Status"),$_SERVER["PHP_SELF"],"fk_statut","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("MergeOrDeposit"),$_SERVER["PHP_SELF"],"","",$param,'align="center"',$sortfield,$sortorder);
 	print "</tr>\n";
 
