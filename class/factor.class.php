@@ -63,7 +63,8 @@ class TFactor extends TObjetStd {
 		$a->userdone = $user;
 		$a->percentage = 100;
 		$a->datep = date('Y-m-d H:i:s');
-		$a->add($user);
+		if((float) DOL_VERSION >= 11) $a->create($user);
+		else $a->add($user);
 		
 	}
 	 

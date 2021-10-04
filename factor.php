@@ -265,7 +265,7 @@ $sql.= ", sum(pf.amount) as am";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 $sql.= " FROM ".MAIN_DB_PREFIX."societe as s LEFT JOIN ".MAIN_DB_PREFIX."societe_extrafields sex ON (sex.fk_object = s.rowid)";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe_commerciaux as sc ON (s.rowid = sc.fk_soc) ";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as f ON (f.fk_soc = s.rowid)
+$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as f ON (f.fk_soc = s.rowid) 
 	 LEFT JOIN ".MAIN_DB_PREFIX."facture_extrafields fex ON (fex.fk_object = f.rowid)";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."paiement_facture as pf ON (f.rowid=pf.fk_facture) ";
 $sql.= " WHERE sex.factor_suivi=1";
@@ -283,7 +283,7 @@ if ($search_refcustomer) $sql .= " AND f.ref_client LIKE '%".$db->escape($search
 if ($search_societe)     $sql .= " AND s.nom LIKE '%".$db->escape($search_societe)."%'";
 if ($search_montant_ht)  $sql .= " AND f.total = '".$db->escape($search_montant_ht)."'";
 if ($search_montant_ttc) $sql .= " AND f.total_ttc = '".$db->escape($search_montant_ttc)."'";
-if (GETPOST('sf_ref', 'none'))   $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape(GETPOST('sf_ref', 'no'))."%'";
+if (GETPOST('sf_ref', 'none'))   $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape(GETPOST('sf_ref', 'none'))."%'";
 $sql.= " GROUP BY s.nom, s.rowid, f.rowid, f." . $invoiceRefDBField . " ";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 $sql.= " ORDER BY ";
@@ -308,7 +308,7 @@ if ($resql)
 	$param.=(! empty($socid)?"&amp;socid=".$socid:"");
 	$param.=(! empty($option)?"&amp;option=".$option:"");
     if ($factor_depot >= 0)  $param.='&amp;factor_depot='.urlencode($factor_depot);
-    if ($search_ref)         $param.='&amp;search_ref='.urlencode($search_ref);
+	if ($search_ref)         $param.='&amp;search_ref='.urlencode($search_ref);
     	if ($search_refcustomer) $param.='&amp;search_ref='.urlencode($search_refcustomer);
 	if ($search_societe)     $param.='&amp;search_societe='.urlencode($search_societe);
 	if ($search_montant_ht)  $param.='&amp;search_montant_ht='.urlencode($search_montant_ht);
@@ -343,7 +343,7 @@ if ($resql)
 	print_liste_field_titre($langs->trans("AmountTTC"),$_SERVER["PHP_SELF"],"f.total_ttc","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Received"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Rest"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("Status"),$_SERVER["PHP_SELF"],"fk_statut","",$param,'align="right"',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Status"),$_SERVER["PHP_SELF"],"fk_statut,paye,am","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("MergeOrDeposit"),$_SERVER["PHP_SELF"],"","",$param,'align="center"',$sortfield,$sortorder);
 	print "</tr>\n";
 
@@ -509,7 +509,23 @@ if ($resql)
 	print '<br>';
 	print '<input type="hidden" name="option" value="'.$option.'">';
 	// We disable multilang because we concat already existing pdf.
-	$formfile->show_documents('facture','unpaid/temp',$filedir,$urlsource,$genallowed,$delallowed,'',1,1,0,48,1,$param,$langs->trans("PDFMerge"),$langs->trans("PDFMerge"));
+	print $formfile->showdocuments(
+		'facture',
+		'unpaid/temp',
+		$filedir,
+		$urlsource,
+		$genallowed,
+		$delallowed,
+		'',
+		1,
+		1,
+		0,
+		48,
+		1,
+		$param,
+		$langs->trans('PDFMerge'),
+		$langs->trans('PDFMerge')
+	);
 	print '</form>';
 
 	$db->free($resql);
