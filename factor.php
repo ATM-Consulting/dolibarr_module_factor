@@ -34,6 +34,12 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 dol_include_once('/factor/class/factor.class.php');
 dol_include_once('/factor/lib/factor.lib.php');
 
+/**
+ * @var Translate $langs
+ * @var User $user
+ * @var DoliDB $db
+ * @var stdClass $conf
+ */
 $langs->load("bills");
 $langs->load("factor@factor");
 
@@ -46,7 +52,8 @@ $option = GETPOST('option', 'none');
 $builddoc_generatebutton=GETPOST('builddoc_generatebutton', 'none');
 $factor_depot_classify = GETPOST('factor_depot_classify', 'none');
 // Security check
-if ($user->societe_id) $socid=$user->societe_id;
+if (!empty($user->societe_id)) $socid = $user->societe_id;
+elseif (!empty($user->socid))  $socid = $user->socid;
 $result = restrictedArea($user,'facture',$id,'');
 
 $diroutputpdf=$conf->facture->dir_output . '/unpaid/temp';
@@ -255,17 +262,29 @@ $factor_depot = GETPOST('factor_depot','int');
 
 $db->query('SET SESSION sql_mode = \'\';');
 
-$invoiceRefDBField = floatval(DOL_VERSION) >= 10 ? 'ref' : 'facnumber';
+
+$sqlColumnFactureRef = 'ref';
+$sqlColumnFactureTotalHT = 'total_ht';
+$sqlColumnFactureTVA = 'total_tva';
+/* DOLIBARR COMPATIBILITY < v14 */
+if ((float) DOL_VERSION < 14) {
+	$sqlColumnFactureTotalHT = 'total';
+	$sqlColumnFactureTVA = 'tva';
+}
+/* DOLIBARR COMPATIBILITY < v10 */
+if ((float) DOL_VERSION < 10) {
+	$sqlColumnFactureRef = 'facnumber';
+}
 
 $sql = "SELECT s.nom, s.rowid as socid";
-$sql.= ", f.rowid as facid, f." . $invoiceRefDBField . " as facnumber, f.ref_client,f.date_valid as datev, f.increment, f.total as total_ht, f.tva as total_tva, f.total_ttc, f.localtax1, f.localtax2, f.revenuestamp";
+$sql.= ", f.rowid as facid, f." . $sqlColumnFactureRef . " as facnumber, f.ref_client,f.date_valid as datev, f.increment, f." . $sqlColumnFactureTotalHT . " as total_ht, f." . $sqlColumnFactureTVA . " as total_tva, f.total_ttc, f.localtax1, f.localtax2, f.revenuestamp";
 $sql.= ", f.datef as df, f.date_lim_reglement as datelimite";
 $sql.= ", f.paye as paye, f.fk_statut, f.type,fex.factor_depot";
 $sql.= ", sum(pf.amount) as am";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 $sql.= " FROM ".MAIN_DB_PREFIX."societe as s LEFT JOIN ".MAIN_DB_PREFIX."societe_extrafields sex ON (sex.fk_object = s.rowid)";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX."societe_commerciaux as sc ON (s.rowid = sc.fk_soc) ";
-$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as f ON (f.fk_soc = s.rowid) 
+$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."facture as f ON (f.fk_soc = s.rowid)
 	 LEFT JOIN ".MAIN_DB_PREFIX."facture_extrafields fex ON (fex.fk_object = f.rowid)";
 $sql.= " LEFT JOIN ".MAIN_DB_PREFIX."paiement_facture as pf ON (f.rowid=pf.fk_facture) ";
 $sql.= " WHERE sex.factor_suivi=1";
@@ -278,18 +297,18 @@ else $sql.=" AND fex.factor_depot=1";
 if ($option == 'late') $sql.=" AND f.date_lim_reglement < '".$db->idate(dol_now() - $conf->facture->client->warning_delay)."'";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= " AND sc.fk_user = " .$user->id;
 if (! empty($socid)) $sql .= " AND s.rowid = ".$socid;
-if ($search_ref)         $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape($search_ref)."%'";
+if ($search_ref)         $sql .= " AND f." . $sqlColumnFactureRef . " LIKE '%" . $db->escape($search_ref) . "%'";
 if ($search_refcustomer) $sql .= " AND f.ref_client LIKE '%".$db->escape($search_refcustomer)."%'";
 if ($search_societe)     $sql .= " AND s.nom LIKE '%".$db->escape($search_societe)."%'";
-if ($search_montant_ht)  $sql .= " AND f.total = '".$db->escape($search_montant_ht)."'";
+if ($search_montant_ht)  $sql .= " AND f.".$sqlColumnFactureTotalHT." = '".$db->escape($search_montant_ht)."'";
 if ($search_montant_ttc) $sql .= " AND f.total_ttc = '".$db->escape($search_montant_ttc)."'";
-if (GETPOST('sf_ref', 'none'))   $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape(GETPOST('sf_ref', 'none'))."%'";
-$sql.= " GROUP BY s.nom, s.rowid, f.rowid, f." . $invoiceRefDBField . " ";
+if (GETPOST('sf_ref', 'none'))   $sql .= " AND f." . $sqlColumnFactureRef . " LIKE '%" . $db->escape(GETPOST('sf_ref', 'none')) . "%'";
+$sql.= " GROUP BY s.nom, s.rowid, f.rowid, f." . $sqlColumnFactureRef . " ";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 $sql.= " ORDER BY ";
 $listfield=explode(',',$sortfield);
 foreach ($listfield as $key => $value) $sql.=$listfield[$key]." ".$sortorder.",";
-$sql.= " f." . $invoiceRefDBField . " DESC";
+$sql.= " f." . $sqlColumnFactureRef . " DESC";
 
 //$sql .= $db->plimit($limit+1,$offset);
 //print $sql;
@@ -333,13 +352,13 @@ if ($resql)
 	$i = 0;
 	print '<table class="liste" width="100%">';
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Ref"),$_SERVER["PHP_SELF"],"f." . $invoiceRefDBField,"",$param,"",$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Ref"),$_SERVER["PHP_SELF"], "f." . $sqlColumnFactureRef, "", $param, "", $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans('RefCustomer'),$_SERVER["PHP_SELF"],'f.ref_client','',$param,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Date"),$_SERVER["PHP_SELF"],"f.datef","",$param,'align="center"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("DateDue"),$_SERVER["PHP_SELF"],"f.date_lim_reglement","",$param,'align="center"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Company"),$_SERVER["PHP_SELF"],"s.nom","",$param,"",$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AmountHT"),$_SERVER["PHP_SELF"],"f.total","",$param,'align="right"',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("Taxes"),$_SERVER["PHP_SELF"],"f.tva","",$param,'align="right"',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AmountHT"),$_SERVER["PHP_SELF"],"f." . $sqlColumnFactureTotalHT,"",$param,'align="right"',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Taxes"),$_SERVER["PHP_SELF"],"f." . $sqlColumnFactureTVA,"",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AmountTTC"),$_SERVER["PHP_SELF"],"f.total_ttc","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Received"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Rest"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
