@@ -34,6 +34,12 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 dol_include_once('/factor/class/factor.class.php');
 dol_include_once('/factor/lib/factor.lib.php');
 
+/**
+ * @var Translate $langs
+ * @var User $user
+ * @var DoliDB $db
+ * @var stdClass $conf
+ */
 $langs->load("bills");
 $langs->load("factor@factor");
 
@@ -42,11 +48,12 @@ $action = GETPOST('action','alpha');
 $export_txt = GETPOST('export_txt', 'alpha');
 if (!empty($export_txt)) $action = 'export';
 
-$option = GETPOST('option');
-$builddoc_generatebutton=GETPOST('builddoc_generatebutton');
-$factor_depot_classify = GETPOST('factor_depot_classify');
+$option = GETPOST('option', 'none');
+$builddoc_generatebutton=GETPOST('builddoc_generatebutton', 'none');
+$factor_depot_classify = GETPOST('factor_depot_classify', 'none');
 // Security check
-if ($user->societe_id) $socid=$user->societe_id;
+if (!empty($user->societe_id)) $socid = $user->societe_id;
+elseif (!empty($user->socid))  $socid = $user->socid;
 $result = restrictedArea($user,'facture',$id,'');
 
 $diroutputpdf=$conf->facture->dir_output . '/unpaid/temp';
@@ -55,7 +62,7 @@ if (! $user->rights->societe->client->voir || $socid) $diroutputpdf.='/private/'
 
 if(!empty($factor_depot_classify)) {
 
-	$TFactorDepot = GETPOST('toGenerate');
+	$TFactorDepot = GETPOST('toGenerate', 'none');
 	//var_dump($TFactorDepot);
 	if(!empty($TFactorDepot)) {
 		foreach($TFactorDepot as $facref) {
@@ -79,7 +86,7 @@ if(!empty($factor_depot_classify)) {
  * Action
  */
 
-if ($action == "builddoc" && $user->rights->facture->lire && ! GETPOST('button_search') && !empty($builddoc_generatebutton))
+if ($action == "builddoc" && $user->rights->facture->lire && ! GETPOST('button_search', 'none') && !empty($builddoc_generatebutton))
 {
 	if (is_array($_POST['toGenerate']))
 	{
@@ -101,7 +108,7 @@ if ($action == "builddoc" && $user->rights->facture->lire && ! GETPOST('button_s
         // Define output language (Here it is not used because we do only merging existing PDF)
         $outputlangs = $langs;
         $newlang='';
-        if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id')) $newlang=GETPOST('lang_id');
+        if ($conf->global->MAIN_MULTILANGS && empty($newlang) && GETPOST('lang_id', 'none')) $newlang=GETPOST('lang_id', 'none');
         if ($conf->global->MAIN_MULTILANGS && empty($newlang)) $newlang=$object->client->default_lang;
         if (! empty($newlang))
         {
@@ -165,11 +172,11 @@ if ($action == 'remove_file')
 	require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 
 	$langs->load("other");
-	$upload_dir = $conf->facture->dir_output;
-	$file = $upload_dir . '/' . GETPOST('file');
+	$upload_dir = $diroutputpdf;
+	$file = $upload_dir . '/' . GETPOST('file', 'none');
 	$ret=dol_delete_file($file,0,0,0,'');
-	if ($ret) setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile')));
-	else setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile')), 'errors');
+	if ($ret) setEventMessage($langs->trans("FileWasRemoved", GETPOST('urlfile', 'none')));
+	else setEventMessage($langs->trans("ErrorFailToDeleteFile", GETPOST('urlfile', 'none')), 'errors');
 	$action='';
 }
 
@@ -232,12 +239,12 @@ $(document).ready(function() {
 
 $now=dol_now();
 
-$search_ref = GETPOST("search_ref");
-$search_refcustomer=GETPOST('search_refcustomer');
-$search_societe = GETPOST("search_societe");
-$search_montant_ht = GETPOST("search_montant_ht");
-$search_montant_ttc = GETPOST("search_montant_ttc");
-$late = GETPOST("late");
+$search_ref = GETPOST("search_ref", 'alpha');
+$search_refcustomer=GETPOST('search_refcustomer', 'alpha');
+$search_societe = GETPOST("search_societe", 'alpha');
+$search_montant_ht = GETPOST("search_montant_ht", 'alpha');
+$search_montant_ttc = GETPOST("search_montant_ttc", 'alpha');
+$late = GETPOST("late", 'none');
 
 $sortfield = GETPOST("sortfield",'alpha');
 $sortorder = GETPOST("sortorder",'alpha');
@@ -251,14 +258,26 @@ if (! $sortorder) $sortorder="ASC";
 
 $limit = $conf->liste_limit;
 
-$factor_depot = (int)GETPOST('factor_depot','int');
+$factor_depot = GETPOST('factor_depot','int');
 
 $db->query('SET SESSION sql_mode = \'\';');
 
-$invoiceRefDBField = floatval(DOL_VERSION) >= 10 ? 'ref' : 'facnumber';
+
+$sqlColumnFactureRef = 'ref';
+$sqlColumnFactureTotalHT = 'total_ht';
+$sqlColumnFactureTVA = 'total_tva';
+/* DOLIBARR COMPATIBILITY < v14 */
+if ((float) DOL_VERSION < 14) {
+	$sqlColumnFactureTotalHT = 'total';
+	$sqlColumnFactureTVA = 'tva';
+}
+/* DOLIBARR COMPATIBILITY < v10 */
+if ((float) DOL_VERSION < 10) {
+	$sqlColumnFactureRef = 'facnumber';
+}
 
 $sql = "SELECT s.nom, s.rowid as socid";
-$sql.= ", f.rowid as facid, f." . $invoiceRefDBField . " as facnumber, f.ref_client,f.date_valid as datev, f.increment, f.total as total_ht, f.tva as total_tva, f.total_ttc, f.localtax1, f.localtax2, f.revenuestamp";
+$sql.= ", f.rowid as facid, f." . $sqlColumnFactureRef . " as facnumber, f.ref_client,f.date_valid as datev, f.increment, f." . $sqlColumnFactureTotalHT . " as total_ht, f." . $sqlColumnFactureTVA . " as total_tva, f.total_ttc, f.localtax1, f.localtax2, f.revenuestamp";
 $sql.= ", f.datef as df, f.date_lim_reglement as datelimite";
 $sql.= ", f.paye as paye, f.fk_statut, f.type,fex.factor_depot";
 $sql.= ", sum(pf.amount) as am";
@@ -278,27 +297,18 @@ else $sql.=" AND fex.factor_depot=1";
 if ($option == 'late') $sql.=" AND f.date_lim_reglement < '".$db->idate(dol_now() - $conf->facture->client->warning_delay)."'";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= " AND sc.fk_user = " .$user->id;
 if (! empty($socid)) $sql .= " AND s.rowid = ".$socid;
-if (GETPOST('filtre'))
-{
-	$filtrearr = explode(",", GETPOST('filtre'));
-	foreach ($filtrearr as $fil)
-	{
-		$filt = explode(":", $fil);
-		$sql .= " AND " . $filt[0] . " = " . $filt[1];
-	}
-}
-if ($search_ref)         $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape($search_ref)."%'";
+if ($search_ref)         $sql .= " AND f." . $sqlColumnFactureRef . " LIKE '%" . $db->escape($search_ref) . "%'";
 if ($search_refcustomer) $sql .= " AND f.ref_client LIKE '%".$db->escape($search_refcustomer)."%'";
 if ($search_societe)     $sql .= " AND s.nom LIKE '%".$db->escape($search_societe)."%'";
-if ($search_montant_ht)  $sql .= " AND f.total = '".$db->escape($search_montant_ht)."'";
+if ($search_montant_ht)  $sql .= " AND f.".$sqlColumnFactureTotalHT." = '".$db->escape($search_montant_ht)."'";
 if ($search_montant_ttc) $sql .= " AND f.total_ttc = '".$db->escape($search_montant_ttc)."'";
-if (GETPOST('sf_ref'))   $sql .= " AND f." . $invoiceRefDBField . " LIKE '%".$db->escape(GETPOST('sf_ref'))."%'";
-$sql.= " GROUP BY s.nom, s.rowid, f.rowid, f." . $invoiceRefDBField . " ";
+if (GETPOST('sf_ref', 'none'))   $sql .= " AND f." . $sqlColumnFactureRef . " LIKE '%" . $db->escape(GETPOST('sf_ref', 'none')) . "%'";
+$sql.= " GROUP BY s.nom, s.rowid, f.rowid, f." . $sqlColumnFactureRef . " ";
 if (! $user->rights->societe->client->voir && ! $socid) $sql .= ", sc.fk_soc, sc.fk_user ";
 $sql.= " ORDER BY ";
 $listfield=explode(',',$sortfield);
 foreach ($listfield as $key => $value) $sql.=$listfield[$key]." ".$sortorder.",";
-$sql.= " f." . $invoiceRefDBField . " DESC";
+$sql.= " f." . $sqlColumnFactureRef . " DESC";
 
 //$sql .= $db->plimit($limit+1,$offset);
 //print $sql;
@@ -316,6 +326,7 @@ if ($resql)
 	$param="";
 	$param.=(! empty($socid)?"&amp;socid=".$socid:"");
 	$param.=(! empty($option)?"&amp;option=".$option:"");
+    if ($factor_depot >= 0)  $param.='&amp;factor_depot='.urlencode($factor_depot);
 	if ($search_ref)         $param.='&amp;search_ref='.urlencode($search_ref);
     	if ($search_refcustomer) $param.='&amp;search_ref='.urlencode($search_refcustomer);
 	if ($search_societe)     $param.='&amp;search_societe='.urlencode($search_societe);
@@ -335,18 +346,19 @@ if ($resql)
 
 	print '<form id="form_generate_pdf" method="POST" action="'.$_SERVER["PHP_SELF"].'?sortfield='. $sortfield .'&sortorder='. $sortorder .'">';
 	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+    print '<input type="hidden" name="factor_depot" value="'.dol_escape_htmltag($factor_depot).'">';
 	if ($late) print '<input type="hidden" name="late" value="'.dol_escape_htmltag($late).'">';
 
 	$i = 0;
 	print '<table class="liste" width="100%">';
 	print '<tr class="liste_titre">';
-	print_liste_field_titre($langs->trans("Ref"),$_SERVER["PHP_SELF"],"f." . $invoiceRefDBField,"",$param,"",$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Ref"),$_SERVER["PHP_SELF"], "f." . $sqlColumnFactureRef, "", $param, "", $sortfield, $sortorder);
 	print_liste_field_titre($langs->trans('RefCustomer'),$_SERVER["PHP_SELF"],'f.ref_client','',$param,'',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Date"),$_SERVER["PHP_SELF"],"f.datef","",$param,'align="center"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("DateDue"),$_SERVER["PHP_SELF"],"f.date_lim_reglement","",$param,'align="center"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Company"),$_SERVER["PHP_SELF"],"s.nom","",$param,"",$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("AmountHT"),$_SERVER["PHP_SELF"],"f.total","",$param,'align="right"',$sortfield,$sortorder);
-	print_liste_field_titre($langs->trans("Taxes"),$_SERVER["PHP_SELF"],"f.tva","",$param,'align="right"',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("AmountHT"),$_SERVER["PHP_SELF"],"f." . $sqlColumnFactureTotalHT,"",$param,'align="right"',$sortfield,$sortorder);
+	print_liste_field_titre($langs->trans("Taxes"),$_SERVER["PHP_SELF"],"f." . $sqlColumnFactureTVA,"",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("AmountTTC"),$_SERVER["PHP_SELF"],"f.total_ttc","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Received"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
 	print_liste_field_titre($langs->trans("Rest"),$_SERVER["PHP_SELF"],"am","",$param,'align="right"',$sortfield,$sortorder);
