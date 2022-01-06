@@ -250,9 +250,6 @@ $sortfield = GETPOST("sortfield",'alpha');
 $sortorder = GETPOST("sortorder",'alpha');
 $page = GETPOST("page",'int');
 if ($page == -1) { $page = 0; }
-$offset = $conf->liste_limit * $page;
-$pageprev = $page - 1;
-$pagenext = $page + 1;
 if (! $sortfield) $sortfield="f.date_lim_reglement";
 if (! $sortorder) $sortorder="ASC";
 
@@ -310,8 +307,6 @@ $listfield=explode(',',$sortfield);
 foreach ($listfield as $key => $value) $sql.=$listfield[$key]." ".$sortorder.",";
 $sql.= " f." . $sqlColumnFactureRef . " DESC";
 
-//$sql .= $db->plimit($limit+1,$offset);
-//print $sql;
 $resql = $db->query($sql);
 if ($resql)
 {
