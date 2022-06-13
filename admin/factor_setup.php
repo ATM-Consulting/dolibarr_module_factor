@@ -32,6 +32,8 @@ require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
 require_once '../lib/factor.lib.php';
 
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
+
 // Translations
 $langs->load("factor@factor");
 
@@ -179,7 +181,7 @@ foreach($TFactor as $idFactor) {
 		echo '<td>'.$formCore->zonetexte('', 'TFactor['.$factor->getId().'][mention]', $factor->mention, 80,5).'</td>';
 	}
 
-	echo '<td><a href="?action=delete_factor&id='.$factor->getId().'">'.img_delete( $langs->trans('Delete') ).'</a></td>';
+	echo '<td><a href="?action=delete_factor&token=' . $newToken . '&id='.$factor->getId().'">'.img_delete( $langs->trans('Delete') ).'</a></td>';
 
 	print '</tr>';
 
@@ -210,7 +212,7 @@ print '<td>'.$langs->trans("setFACTOR_LIMIT_DEPOT").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_FACTOR_LIMIT_DEPOT">';
 print $formCore->texte('',"FACTOR_LIMIT_DEPOT",$conf->global->FACTOR_LIMIT_DEPOT,3);
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
@@ -231,7 +233,7 @@ print '<td>'.$langs->trans("FACTOR_CAN_USE_CUSTOMER").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_FACTOR_CAN_USE_CUSTOMER">';
 print $form->selectarray('FACTOR_CAN_USE_CUSTOMER',array('0'=>'Non','1'=>'Oui'),$conf->global->FACTOR_CAN_USE_CUSTOMER);
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
@@ -245,7 +247,7 @@ print '<td>'.$langs->trans("PDFMentionDisposition").'</td>';
 print '<td align="center" width="20">&nbsp;</td>';
 print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
-print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_FACTOR_PDF_DISPOSITION">';
 print $form->selectarray('FACTOR_PDF_DISPOSITION', array('public_note' => $langs->trans("PublicNote"),'footer' => $langs->trans("Footer")), $conf->global->FACTOR_PDF_DISPOSITION);
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';

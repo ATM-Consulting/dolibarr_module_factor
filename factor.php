@@ -34,6 +34,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/pdf.lib.php';
 dol_include_once('/factor/class/factor.class.php');
 dol_include_once('/factor/lib/factor.lib.php');
 
+$newToken = function_exists('newToken') ? newToken() : $_SESSION['newtoken'];
+
 /**
  * @var Translate $langs
  * @var User $user
@@ -340,7 +342,7 @@ if ($resql)
 	dol_htmloutput_mesg($mesg);
 
 	print '<form id="form_generate_pdf" method="POST" action="'.$_SERVER["PHP_SELF"].'?sortfield='. $sortfield .'&sortorder='. $sortorder .'">';
-	print '<input type="hidden" name="token" value="'.$_SESSION['newtoken'].'">';
+	print '<input type="hidden" name="token" value="'.$newToken.'">';
     print '<input type="hidden" name="factor_depot" value="'.dol_escape_htmltag($factor_depot).'">';
 	if ($late) print '<input type="hidden" name="late" value="'.dol_escape_htmltag($late).'">';
 
@@ -448,7 +450,7 @@ if ($resql)
 			if ((float) DOL_VERSION >= 3.7) $card_url = DOL_URL_ROOT.'/comm/card.php';
 			else $card_url = DOL_URL_ROOT.'/comm/fiche.php';
 
-			print '<td><a href="'.$card_url.'?socid='.$objp->socid.'">'.img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($objp->nom,28).'</a></td>';
+			print '<td><a href="'.$card_url.'?socid='.$objp->socid.'&token='.$newToken.'">'.img_object($langs->trans("ShowCompany"),"company").' '.dol_trunc($objp->nom,28).'</a></td>';
 
 			print '<td align="right">'.price($objp->total_ht).'</td>';
 			print '<td align="right">'.price($objp->total_tva);
