@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 ## 1.0
+
+- FIX : Compatibility V16 TOKEN - *13/06/2022* - 1.0.8  
+  - change family
 - FIX : Missing Icon  *25/07/2021* - 1.0.7
 - FIX : Compatibility V15 : variables inutilisées supprimées car provoques des warning - 1.0.6
 - FIX : v14 compatibility: `f.tva` (now `total_tva`) and `f.total` (now `total_ht`)
