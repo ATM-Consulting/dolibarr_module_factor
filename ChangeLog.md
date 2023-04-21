@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## 1.0
 
+- FIX : Compatibility V17 PHP8.1 warnings - *21/04/2023* - 1.0.9
 - FIX : Compatibility V16 TOKEN - *13/06/2022* - 1.0.8  
   - change family
 - FIX : Missing Icon  *25/07/2021* - 1.0.7

@@ -1,7 +1,9 @@
 <?php
 
 class TFactor extends TObjetStd {
-	
+
+    public $element = "factor";
+
 	function __construct() { /* declaration */
                global $conf;
                 
