@@ -27,6 +27,8 @@ function factorAdminPrepareHead()
 {
     global $langs, $conf;
 
+    $object = new stdClass();
+
     $langs->load("factor@factor");
 
     $h = 0;
