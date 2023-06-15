@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+## 1.1.0
+- FIX : Repetition of the INVOICE_FREE_TEXT constant during a multiple regeneration of documents
+
+
 ## 1.0
 
 - FIX : Compatibility V17 PHP8.1 warnings - *21/04/2023* - 1.0.9

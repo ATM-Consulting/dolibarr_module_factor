@@ -75,6 +75,7 @@ class ActionsFactor
 					define('INC_FROM_DOLIBARR', true);
 					dol_include_once('/factor/config.php');
 					dol_include_once('/factor/class/factor.class.php');
+                    require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 					
 					$PDOdb = new TPDOdb;
 					
@@ -92,6 +93,8 @@ class ActionsFactor
 								$r=$object->update_note($object->note_public, '_public');
 							}
 						}
+
+                        $conf->global->INVOICE_FREE_TEXT = dolibarr_get_const($db, "INVOICE_FREE_TEXT", $conf->entity);
 						
 						if($conf->global->FACTOR_PDF_DISPOSITION == 'footer' || empty($conf->global->FACTOR_PDF_DISPOSITION)) {
 							$conf->global->INVOICE_FREE_TEXT = $factor->mention . $conf->global->INVOICE_FREE_TEXT;
