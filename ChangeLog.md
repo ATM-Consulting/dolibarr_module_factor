@@ -2,9 +2,15 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
-- NEW: compat V19 et php8.2 - *11/12/2023* - 1.1.0  
+- NEW: compat V19 et php8.2 - *11/12/2023* - 1.2.0  
   Changed Dolibarr compatibility range to 15 min - 19 max  
   Change PHP compatibility range to 7.0 min - 8.2 max
+
+
+## 1.1.0
+- FIX : Repetition of the INVOICE_FREE_TEXT constant during a multiple regeneration of documents
+
+
 ## 1.0
 
 - FIX : Compatibility V17 PHP8.1 warnings - *21/04/2023* - 1.0.9
