@@ -104,8 +104,7 @@ function _parseNatixis(&$db, &$TRefFacture)
 			$mod = '   ';
 		} else {
 			$factype = 'FA';
-			$date_echeance = $facture->date_lim_reglement;
-			if(property_exists($facture, 'date_lim_reglement')) $facture->date_echeance = $date_echeance;
+			if(property_exists($facture, 'date_lim_reglement')) $date_echeance = $facture->date_lim_reglement;
 			if(property_exists($facture, 'date_echeance')) $date_echeance = $facture->date_echeance;
 			$date_ech = date('Ymd', $date_echeance);
 			$mod = $facture->mode_reglement_code;

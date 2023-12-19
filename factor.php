@@ -522,8 +522,8 @@ if ($resql)
 	 * Show list of available documents
 	 */
 	$filedir=$diroutputpdf;
-	$genallowed = $user->HasRight('facture', 'lire');
-	$delallowed = $user->HasRight('facture', 'lire');
+	$genallowed = $user->hasRight('facture', 'lire');
+	$delallowed = $user->hasRight('facture', 'lire');
 
 	print '<br>';
 	print '<input type="hidden" name="option" value="'.$option.'">';
