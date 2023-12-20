@@ -22,11 +22,11 @@
  * \brief   This file is an example hook overload class file
  *          Put some comments here
  */
-
+require_once __DIR__ . '/../backport/v19/core/class/commonhookactions.class.php';
 /**
  * Class ActionsFactor
  */
-class ActionsFactor
+class ActionsFactor extends \factor\RetroCompatCommonHookActions
 {
 	/**
 	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
@@ -86,7 +86,7 @@ class ActionsFactor
 					
 					if(!empty($factor->mention)) 
 					{
-						if($conf->global->FACTOR_PDF_DISPOSITION == 'public_note') {
+						if(getDolGlobalString('FACTOR_PDF_DISPOSITION') == 'public_note') {
 							if(strpos($object->note_public, $factor->mention) === false) 
 							{
 								$object->note_public = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
@@ -96,8 +96,8 @@ class ActionsFactor
 
                         $conf->global->INVOICE_FREE_TEXT = dolibarr_get_const($db, "INVOICE_FREE_TEXT", $conf->entity);
 						
-						if($conf->global->FACTOR_PDF_DISPOSITION == 'footer' || empty($conf->global->FACTOR_PDF_DISPOSITION)) {
-							$conf->global->INVOICE_FREE_TEXT = $factor->mention . $conf->global->INVOICE_FREE_TEXT;
+						if(getDolGlobalString('FACTOR_PDF_DISPOSITION') == 'footer' || !getDolGlobalString('FACTOR_PDF_DISPOSITION')) {
+							$conf->global->INVOICE_FREE_TEXT = $factor->mention . getDolGlobalString('INVOICE_FREE_TEXT');
 						}
 					}
 				}

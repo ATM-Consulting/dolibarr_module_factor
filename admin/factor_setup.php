@@ -171,7 +171,7 @@ foreach($TFactor as $idFactor) {
 	$selectBank = ob_get_clean();
 
 
-	echo '<td>'.$form->select_thirdparty_list($factor->fk_soc,'TFactor['.$factor->getId().'][fk_soc]',(empty($conf->global->FACTOR_CAN_USE_CUSTOMER)?'fournisseur=1':''))
+	echo '<td>'.$form->select_thirdparty_list($factor->fk_soc,'TFactor['.$factor->getId().'][fk_soc]',(!getDolGlobalString('FACTOR_CAN_USE_CUSTOMER')?'fournisseur=1':''))
 	.'<br />'
 	.$selectBank
 	.'</td>'; // supplier
@@ -216,7 +216,7 @@ print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_FACTOR_LIMIT_DEPOT">';
-print $formCore->texte('',"FACTOR_LIMIT_DEPOT",$conf->global->FACTOR_LIMIT_DEPOT,3);
+print $formCore->texte('',"FACTOR_LIMIT_DEPOT",  getDolGlobalString('FACTOR_LIMIT_DEPOT') ,3);
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';
@@ -237,7 +237,7 @@ print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_FACTOR_CAN_USE_CUSTOMER">';
-print $form->selectarray('FACTOR_CAN_USE_CUSTOMER',array('0'=>'Non','1'=>'Oui'),!empty($conf->global->FACTOR_CAN_USE_CUSTOMER) ? 1 : 0);
+print $form->selectarray('FACTOR_CAN_USE_CUSTOMER',array('0'=>'Non','1'=>'Oui'),getDolGlobalString('FACTOR_CAN_USE_CUSTOMER') ? 1 : 0);
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';
@@ -251,7 +251,7 @@ print '<td align="right" width="300">';
 print '<form method="POST" action="'.$_SERVER['PHP_SELF'].'">';
 print '<input type="hidden" name="token" value="'.$newToken.'">';
 print '<input type="hidden" name="action" value="set_FACTOR_PDF_DISPOSITION">';
-print $form->selectarray('FACTOR_PDF_DISPOSITION', array('public_note' => $langs->trans("PublicNote"),'footer' => $langs->trans("Footer")), $conf->global->FACTOR_PDF_DISPOSITION);
+print $form->selectarray('FACTOR_PDF_DISPOSITION', array('public_note' => $langs->trans("PublicNote"),'footer' => $langs->trans("Footer")), getDolGlobalString('FACTOR_PDF_DISPOSITION'));
 print '<input type="submit" class="button" value="'.$langs->trans("Modify").'">';
 print '</form>';
 print '</td></tr>';
