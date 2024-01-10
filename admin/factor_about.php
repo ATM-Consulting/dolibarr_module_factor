@@ -57,20 +57,20 @@ print dol_get_fiche_head(
     $head,
     'about',
     $langs->trans("Module104905Name"),
-    0,
+    -1,
     'factor@factor'
 );
 
-// About page goes here
-print '<div style="float: left;"><img src="../img/Dolibarr_Preferred_Partner_logo.png" /></div>';
-print '<div>'.$langs->trans('ATMAbout').'</div>';
 
-print dol_get_fiche_end();
+require_once __DIR__ . '/../class/techatm.class.php';
+$techATM = new \factor\TechATM($db);
 
-print '<br><center>';
-print '<a href="http://www.atm-consulting.fr" target="_blank"><img src="../img/ATM_logo.jpg" /></a>';
-print '</center>';
+require_once __DIR__ . '/../core/modules/modFactor.class.php';
+$moduleDescriptor = new modFactor($db);
 
+print $techATM->getAboutPage($moduleDescriptor);
+
+print dol_get_fiche_end(-1);
 llxFooter();
 
 $db->close();
