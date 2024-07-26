@@ -60,7 +60,7 @@ class modFactor extends DolibarrModules
 		// Module description, used if translation string 'ModuleXXXDesc' not found (where XXX is value of numeric property 'numero' of module)
 		$this->description = "Gestion de l'affacturage";
 		// Possible values for version are: 'development', 'experimental', 'dolibarr' or version
-		$this->version = '1.3.0';
+		$this->version = '1.4.0';
 		// Key used in llx_const table to save module status enabled/disabled (where MYMODULE is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
 		// Where to store the module in setup page (0=common,1=interface,2=others,3=very specific)
@@ -108,7 +108,7 @@ class modFactor extends DolibarrModules
 		$this->requiredby = array();	// List of modules id to disable if this one is disabled
 		$this->conflictwith = array();	// List of modules id this module is in conflict with
 		$this->phpmin = array(7,0);					// Minimum version of PHP required by module
-		$this->need_dolibarr_version = array(15, 0);	// Minimum version of Dolibarr required by module
+		$this->need_dolibarr_version = array(16, 0);	// Minimum version of Dolibarr required by module
 		$this->langfiles = array("factor@factor");
 
 		// Url to the file with your last numberversion of this module
@@ -151,7 +151,7 @@ class modFactor extends DolibarrModules
         $this->tabs = array();
 
         // Dictionaries
-	    if (! isset($conf->factor->enabled))
+	    if (! isModEnabled('factor'))
         {
         	$conf->factor=new stdClass();
         	$conf->factor->enabled=0;
@@ -238,7 +238,7 @@ class modFactor extends DolibarrModules
 				'url'=>'/factor/factor.php?factor_depot=0',
 				'langs'=>'factor@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 				'position'=>10,
-				'enabled'=>'$conf->factor->enabled',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+				'enabled'=>'isModEnabled("factor")',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 				'perms'=>'$user->rights->facture->lire',			                // Use 'perms'=>'$user->rights->factor->level1->level2' if you want your menu with a permission rules
 				'target'=>'',
 				'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
@@ -251,7 +251,7 @@ class modFactor extends DolibarrModules
 				'url'=>'/factor/factor.php?factor_depot=0',
 				'langs'=>'factor@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 				'position'=>11,
-				'enabled'=>'$conf->factor->enabled',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+				'enabled'=>'isModEnabled("factor")',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 				'perms'=>'$user->rights->facture->lire',			                // Use 'perms'=>'$user->rights->factor->level1->level2' if you want your menu with a permission rules
 				'target'=>'',
 				'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
@@ -264,7 +264,7 @@ class modFactor extends DolibarrModules
 				'url'=>'/factor/factor.php?factor_depot=1',
 				'langs'=>'factor@factor',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
 				'position'=>12,
-				'enabled'=>'$conf->factor->enabled',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+				'enabled'=>'isModEnabled("factor")',  // Define condition to show or hide menu entry. Use '$conf->factor->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
 				'perms'=>'$user->rights->facture->lire',			                // Use 'perms'=>'$user->rights->factor->level1->level2' if you want your menu with a permission rules
 				'target'=>'',
 				'user'=>2);				                // 0=Menu for internal users, 1=external users, 2=both
