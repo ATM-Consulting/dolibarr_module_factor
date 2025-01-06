@@ -176,7 +176,7 @@ foreach($TFactor as $idFactor) {
 	.$selectBank
 	.'</td>'; // supplier
 
-	if(!empty($conf->fckeditor->enabled)) {
+	if(isModEnabled("fckeditor")) {
 	$editor=new DolEditor('TFactor['.$factor->getId().'][mention]',$factor->mention,'',200);
     	echo '<td>'.$editor->Create(1).'</td>';
 	} else {
