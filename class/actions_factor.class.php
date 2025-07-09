@@ -95,12 +95,14 @@ class ActionsFactor extends \factor\RetroCompatCommonHookActions
 						}
 
                         $conf->global->INVOICE_FREE_TEXT = dolibarr_get_const($db, "INVOICE_FREE_TEXT", $conf->entity);
-						
+
 						if(getDolGlobalString('FACTOR_PDF_DISPOSITION') == 'footer' || !getDolGlobalString('FACTOR_PDF_DISPOSITION')) {
 							$conf->global->INVOICE_FREE_TEXT = $factor->mention . getDolGlobalString('INVOICE_FREE_TEXT');
 						}
 					}
-				}
+                    $conf->global->INVOICE_FREE_TEXT = dolibarr_get_const($db, "INVOICE_FREE_TEXT", $conf->entity);
+
+                }
 			}
 			
 		}
