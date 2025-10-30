@@ -86,6 +86,7 @@ if(!empty($factor_depot_classify)) {
 
 }
 
+$hookmanager->initHooks(array('factorlist'));
 
 /*
  * Action
