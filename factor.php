@@ -86,6 +86,7 @@ if(!empty($factor_depot_classify)) {
 
 }
 
+$hookmanager->initHooks(array('factorlist'));
 
 /*
  * Action
@@ -511,7 +512,9 @@ if ($resql)
 
 	if(empty($factor_depot)) {
 		print "<div class='tabsAction'>";
-		print "<select name='format'><option value='natixis'>Natixis</option></select>&nbsp;";
+		print "<select name='format'><option value='natixis'>Natixis</option>";
+		print "<option value='tif_excel'>TIF (Excel)</option>";
+		print "</select>&nbsp;";
 		print "<input class='button' type='submit' name='export_txt' value='".$langs->transnoentitiesnoconv('FileExport')."' />";
 		print '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 		print "<input class='button' type='submit' name='factor_depot_classify' value='".$langs->trans('ClassifyDepot')."' />";

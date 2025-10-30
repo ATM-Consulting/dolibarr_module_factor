@@ -29,7 +29,7 @@ require_once __DIR__ . '/../backport/v19/core/class/commonhookactions.class.php'
 class ActionsFactor extends \factor\RetroCompatCommonHookActions
 {
 	/**
-	 * @var array Hook results. Propagated to $this->results for later reuse
+	 * @var array Hook results. Propagated to $hookmanager->resArray for later reuse
 	 */
 	public $results = array();
 
@@ -50,44 +50,44 @@ class ActionsFactor extends \factor\RetroCompatCommonHookActions
 	{
 	}
 
-	function doActions($parameters, &$object, &$action, $hookmanager)
-	{
+	function doActions($parameters, &$object, &$action, $hookmanager) 
+	{	
 	}
 
-	function beforePDFCreation($parameters, &$object, &$action, $hookmanager)
+	function beforePDFCreation($parameters, &$object, &$action, $hookmanager) 
 	{
 		global $conf,$db;
-
+		
 		if ($object->element == 'facture')
 		{
 			if (isset($object->thirdparty)) $societe = &$object->thirdparty;
-			else
+			else 
 			{
 				dol_include_once('/societe/class/societe.class.php');
 				$societe = new Societe($db);
 				$societe->fetch($object->socid);
 			}
-
-			if(!empty($societe->id))
+			
+			if(!empty($societe->id)) 
 			{
-				if(!empty($societe->array_options['options_fk_soc_factor']) && $societe->array_options['options_factor_suivi'] == 1)
+				if(!empty($societe->array_options['options_fk_soc_factor']) && $societe->array_options['options_factor_suivi'] == 1) 
 				{
 					define('INC_FROM_DOLIBARR', true);
 					dol_include_once('/factor/config.php');
 					dol_include_once('/factor/class/factor.class.php');
                     require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
-
+					
 					$PDOdb = new TPDOdb;
-
+					
 					$factor = new TFactor;
 					$result = $factor->LoadAllBy($PDOdb, array('fk_soc'=>$societe->array_options['options_fk_soc_factor'], 'entity'=>$conf->entity), false);
 
 					$factor = reset($result);	// Take first record found
-
-					if(!empty($factor->mention))
+					
+					if(!empty($factor->mention)) 
 					{
 						if(getDolGlobalString('FACTOR_PDF_DISPOSITION') == 'public_note') {
-							if(strpos($object->note_public, $factor->mention) === false)
+							if(strpos($object->note_public, $factor->mention) === false) 
 							{
 								$object->note_public = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
 								$r=$object->update_note($object->note_public, '_public');
@@ -100,26 +100,12 @@ class ActionsFactor extends \factor\RetroCompatCommonHookActions
 							$conf->global->INVOICE_FREE_TEXT = $factor->mention . getDolGlobalString('INVOICE_FREE_TEXT');
 						}
 					}
-				}
+                    $conf->global->INVOICE_FREE_TEXT = dolibarr_get_const($db, "INVOICE_FREE_TEXT", $conf->entity);
+
+                }
 			}
-
+			
 		}
-
-	}
-
-	/**
-	 * When thirdparties are merged, we need to replace the fk_soc of webhost objects
-	 *
-	 * @param   array()         $parameters     Hook metadatas (context, etc...)
-	 * @param   CommonObject    $object        The object to process (an invoice if you are in invoice module, a propale in propale's module, etc...)
-	 * @param   string          $action        Current action (if set). Generally create or edit or null
-	 * @param   HookManager     $hookmanager    Hook manager propagated to allow calling another hook
-	 * @return  int                             < 0 on error, 0 on success, 1 to replace standard code
-	 */
-	public function replaceThirdparty($parameters, &$object, &$action, $hookmanager)
-	{
-		$tables = ['factor'];
-
-		return CommonObject::commonReplaceThirdparty($this->db, $parameters['soc_origin'], $parameters['soc_dest'], $tables);
+		
 	}
 }

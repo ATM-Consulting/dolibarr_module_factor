@@ -1,10 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
-
 ## Unreleased
-
-## Release 1.5
-- NEW : COMPAT V22 - *18/08/2025* - 1.5.1
+-New : Export CSV,PDF  **29/10/2025** -1.5.2
+## Unreleased
+-NEW : Export Excel **20/10/2025**  - 1.5.1
+## Unreleased
 - NEW : COMPAT V21 - **20/12/2024** - 1.5.0
 
 ## Release 1.4
