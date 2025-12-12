@@ -4,8 +4,9 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 ## Release 1.5
-- NEW : COMPAT V22 - *18/08/2025* - 1.5.1
-- NEW : COMPAT V21 - **20/12/2024** - 1.5.0
+- FIX : COMPAT V23 - *12/12/2025* - 1.5.2 
+- FIX : COMPAT V22 - *18/08/2025* - 1.5.1
+- NEW : COMPAT V21 - *20/12/2024* - 1.5.0
 
 ## Release 1.4
 - NEW : COMPAT V20 - *25/07/2024* - 1.4.0
@@ -29,4 +30,3 @@ All notable changes to this project will be documented in this file.
 - FIX : v14 compatibility: `f.tva` (now `total_tva`) and `f.total` (now `total_ht`)
   \+ module descriptor - *13/10/2021* - 1.0.5
 - FIX : V13 Compatibility Box Module and GETPOST *06/05/2021* - 1.0.4
-
