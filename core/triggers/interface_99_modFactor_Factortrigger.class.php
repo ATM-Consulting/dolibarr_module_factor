@@ -36,105 +36,103 @@
 class InterfaceFactortrigger
 {
 
-    private $db;
+	private $db;
 
-    /**
-     * Constructor
-     *
-     * 	@param		DoliDB		$db		Database handler
-     */
-    public function __construct($db)
-    {
-        $this->db = $db;
+	/**
+	 * Constructor
+	 *
+	 * 	@param		DoliDB		$db		Database handler
+	 */
+	public function __construct($db)
+	{
+		$this->db = $db;
 
-        $this->name = preg_replace('/^Interface/i', '', get_class($this));
-        $this->family = "demo";
-        $this->description = "Triggers of this module are empty functions."
-            . "They have no effect."
-            . "They are provided for tutorial purpose only.";
-        // 'development', 'experimental', 'dolibarr' or version
-        $this->version = 'development';
-        $this->picto = 'factor@factor';
-    }
+		$this->name = preg_replace('/^Interface/i', '', get_class($this));
+		$this->family = "demo";
+		$this->description = "Triggers of this module are empty functions."
+			. "They have no effect."
+			. "They are provided for tutorial purpose only.";
+		// 'development', 'experimental', 'dolibarr' or version
+		$this->version = 'development';
+		$this->picto = 'factor.png';
+	}
 
-    /**
-     * Trigger name
-     *
-     * 	@return		string	Name of trigger file
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
+	/**
+	 * Trigger name
+	 *
+	 * 	@return		string	Name of trigger file
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
 
-    /**
-     * Trigger description
-     *
-     * 	@return		string	Description of trigger file
-     */
-    public function getDesc()
-    {
-        return $this->description;
-    }
+	/**
+	 * Trigger description
+	 *
+	 * 	@return		string	Description of trigger file
+	 */
+	public function getDesc()
+	{
+		return $this->description;
+	}
 
-    /**
-     * Trigger version
-     *
-     * 	@return		string	Version of trigger file
-     */
-    public function getVersion()
-    {
-        global $langs;
-        $langs->load("admin");
+	/**
+	 * Trigger version
+	 *
+	 * 	@return		string	Version of trigger file
+	 */
+	public function getVersion()
+	{
+		global $langs;
+		$langs->load("admin");
 
-        if ($this->version == 'development') {
-            return $langs->trans("Development");
-        } elseif ($this->version == 'experimental')
+		if ($this->version == 'development') {
+			return $langs->trans("Development");
+		} elseif ($this->version == 'experimental')
 
-                return $langs->trans("Experimental");
-        elseif ($this->version == 'dolibarr') return DOL_VERSION;
-        elseif ($this->version) return $this->version;
-        else {
-            return $langs->trans("Unknown");
-        }
-    }
+				return $langs->trans("Experimental");
+		elseif ($this->version == 'dolibarr') return DOL_VERSION;
+		elseif ($this->version) return $this->version;
+		else {
+			return $langs->trans("Unknown");
+		}
+	}
 
-    /**
-     * Function called when a Dolibarrr business event is done.
-     * All functions "run_trigger" are triggered if file
-     * is inside directory core/triggers
-     *
-     * 	@param		string		$action		Event action code
-     * 	@param		Object		$object		Object
-     * 	@param		User		$user		Object user
-     * 	@param		Translate	$langs		Object langs
-     * 	@param		conf		$conf		Object conf
-     * 	@return		int						<0 if KO, 0 if no triggered ran, >0 if OK
-     */
-    public function run_trigger($action, &$object, $user, $langs, $conf)
-    {
-        // Put here code you want to execute when a Dolibarr business events occurs.
-        // Data and type of action are stored into $object and $action
-        // Users
+	/**
+	 * Function called when a Dolibarrr business event is done.
+	 * All functions "run_trigger" are triggered if file
+	 * is inside directory core/triggers
+	 *
+	 * 	@param		string		$action		Event action code
+	 * 	@param		Object		$object		Object
+	 * 	@param		User		$user		Object user
+	 * 	@param		Translate	$langs		Object langs
+	 * 	@param		conf		$conf		Object conf
+	 * 	@return		int						<0 if KO, 0 if no triggered ran, >0 if OK
+	 */
+	public function runTrigger($action, &$object, $user, $langs, $conf)
+	{
+		// Put here code you want to execute when a Dolibarr business events occurs.
+		// Data and type of action are stored into $object and $action
+		// Users
 
-	   	if ($action === 'BILL_CREATE')
-	   	{
-	   		$this->setFkAccountIfIsFactor($object);
-	   	}
-		else if($action==='PROPAL_CREATE' && getDolGlobalString('BANK_ASK_PAYMENT_BANK_DURING_PROPOSAL') ) {
+		if ($action === 'BILL_CREATE') {
+			$this->setFkAccountIfIsFactor($object);
+		} elseif ($action==='PROPAL_CREATE' && getDolGlobalString('BANK_ASK_PAYMENT_BANK_DURING_PROPOSAL') ) {
 			$this->setFkAccountIfIsFactor($object);
 		}
 
 
-        return 1;
-    }
+		return 1;
+	}
 
-    /**
-     * Set the field bank account automatically according to the factor of thirdparty and setup
-     *
-     * @param 	Object		$object		Object edited
-     * @return 	boolean
-     */
+	/**
+	 * Set the field bank account automatically according to the factor of thirdparty and setup
+	 *
+	 * @param 	Object		$object		Object edited
+	 * @return 	boolean
+	 */
 	public function setFkAccountIfIsFactor(&$object)
 	{
 		global $db, $conf;
@@ -143,8 +141,7 @@ class InterfaceFactortrigger
 
 		if (empty($object->thirdparty->id)) return false;
 
-		if(!empty($object->thirdparty->array_options['options_fk_soc_factor']) && $object->thirdparty->array_options['options_factor_suivi'] == 1)
-		{
+		if (!empty($object->thirdparty->array_options['options_fk_soc_factor']) && $object->thirdparty->array_options['options_factor_suivi'] == 1) {
 			if (!defined('INC_FROM_DOLIBARR')) define('INC_FROM_DOLIBARR', true);
 			dol_include_once('/factor/config.php');
 			dol_include_once('/factor/class/factor.class.php');
@@ -156,19 +153,22 @@ class InterfaceFactortrigger
 
 			$factor = reset($result);	// Take first answer found
 
-			if(!empty($factor->mention) && !empty($factor->fk_bank_account))
-			{
-				if((getDolGlobalString('FACTOR_PDF_DISPOSITION') == 'public_note') && strpos($object->note_public, $factor->mention) === false)
-				{
+			if (!empty($factor->mention) && !empty($factor->fk_bank_account)) {
+				if ((getDolGlobalString('FACTOR_PDF_DISPOSITION') == 'public_note') && strpos($object->note_public, $factor->mention) === false) {
 					$note = $factor->mention.(!empty($object->note_public) ? "\n\n".$object->note_public : '');
 					if ($this->checkCanUpdateNote($object)) $object->update_note($note, '_public');
 				}
 				$object->setBankAccount($factor->fk_bank_account);
 			}
-
 		}
 	}
 
+	/**
+	 * Check if note can be updated for the given object.
+	 *
+	 * @param CommonObject $object Dolibarr business object
+	 * @return bool               True if update is allowed, false otherwise
+	 */
 	private function checkCanUpdateNote($object)
 	{
 		global $conf;
